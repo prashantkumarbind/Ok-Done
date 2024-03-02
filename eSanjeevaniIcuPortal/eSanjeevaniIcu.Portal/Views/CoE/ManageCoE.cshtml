@@ -1,0 +1,325 @@
+﻿@using Microsoft.Extensions.Options;
+@using eSanjeevaniIcu.Portal.Controllers;
+@using eSanjeevaniIcu.Portal;
+
+@inject IOptions<ApplicationConfigurations> OptionsApplicationConfiguration
+@{
+    string apiUrl = @OptionsApplicationConfiguration.Value.ApplicationHostUrl;
+    ViewData["Title"] = "Manage CoE";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
+<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap4.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.14.1/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link href="~/css/sweet-alert.css" rel="stylesheet" />
+<script src="~/js/sweet-alert.js"></script>
+<link href="~/css/coe.css" rel="stylesheet" />
+<script src="~/js/ceo.js"></script>
+<script>
+    $(document).ready(function () {
+        if ('@TempData["SubmitResult"]' == '@Common.MsgSaveSuccess') {
+            swal("Success", '@OptionsApplicationConfiguration.Value.MsgSaveSuccess', "success");
+        }
+        else if ('@TempData["SubmitResult"]' == '@Common.MsgUpdateSuccess') {
+            swal("Success", '@OptionsApplicationConfiguration.Value.MsgUpdateSuccess', "success");
+        }
+        else {
+
+        }
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+            $($.fn.dataTable.tables(true)).DataTable().columns.adjust();
+        });
+    });
+    var coeId = '@ViewBag.coeId';
+   
+</script>
+
+<div id="loader" class="loader"></div>
+<div class="PageBorder">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table color-table PageTitle">
+                <div class="row">
+                    <div class="col-md-12">
+                        Manage CoE
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div data-addui='tabs'>
+                <div role='tabs'>
+                    <div>Specialist</div>
+                    <div>Spoke</div>
+                   
+                </div>
+                <div role='contents'>
+                    <div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="table color-table PageTitle">
+                                    <div class="row">
+                                        <div class="col-md-8">
+                                            Add Specialist
+                                        </div>
+                                        <div class="col-md-4" style="text-align:right">
+                                            <button class="btn btn-primary" onclick="AddSpecialist(@ViewBag.coeId)"><i class="fa-solid fa-plus"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="padding:10px;">
+                            <table id="Specialist" class="table-hover table-striped row-border table-sm" style="width:100%;display:block">
+                                <thead>
+                                    <tr>
+                                        <th>Sl.No.</th>
+                                        <th>Specialist</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                            </table>
+
+                        </div>
+                    </div>
+                    <div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="table color-table PageTitle">
+                                    <div class="row">
+                                        <div class="col-md-8">
+                                            Add Spoke
+                                        </div>
+                                        <div class="col-md-4" style="text-align:right">
+                                            <button class="btn btn-primary" onclick="AddSpoke(@ViewBag.coeId)"><i class="fa-solid fa-plus"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="padding:10px;">
+                            <table id="Spokelist" class="table-hover table-striped row-border table-sm" style="width:100%;display:block">
+                                <thead>
+                                    <tr>
+                                        <th>Sl.No.</th>
+                                        <th>Spoke</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                            </table>
+
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row" style="padding:10px;">
+        <div class="col-md-12 text-center">
+            <a asp-action="Index" class="btn btn-primary">Back to List</a>
+        </div>
+    </div>
+   </div> 
+<script>
+    $(document).ready(function () {
+       
+        $('#Specialist').dataTable({
+            "ajax": {
+                "url": `@apiUrl/CoE/GetMappingSpecialist/?key=${coeId}&type=CSP`,
+                "type": "GET"
+            },
+            "columnDefs": [
+                { "width": "5%", "targets": 0 },
+                { "width": "75%", "targets": 1 },
+                { "width": "20%", "targets": 2 }
+            ],
+            columns: [
+                {
+                    data: 'mappingValue',
+                    render: function (data, type, row, meta) {
+                        return meta.row + 1;
+                    }
+                },
+                {
+                    data: 'mappingName',
+
+                },
+
+
+                {
+                    data: 'mappingValue',
+                    render: function (data, type, row, meta) {
+                        
+                        return `<a class="btn btn-primary btn-sm" style="color:#fff" onclick="unmap(${data},'CSP')"><i class="fa-solid fa-trash"></i></a>`;
+                    }
+                }
+            ],
+           
+        });
+            $('#Spokelist').dataTable({
+                "ajax": {
+                "url": `@apiUrl/CoE/GetMappingSpoke?key=${coeId}&type=CS`,
+                    "type": "GET"
+                },
+                "columnDefs": [
+                    { "width": "5%", "targets": 0 },
+                    { "width": "75%", "targets": 1 },
+                    { "width": "20%", "targets": 2 }
+                ],
+            
+                columns: [
+                    {
+                        data: 'mappingValue',
+                        render: function (data, type, row, meta) {
+                            return meta.row + 1;
+                        }
+                    },
+
+                {
+                    data: 'mappingName',
+                    
+                },
+                    {
+                        data: 'mappingValue',
+                        render: function (data, type, row, meta) {
+
+                            return `<a class="btn btn-primary btn-sm" style="color:#fff" onclick="unmap(${data},'CS')"><i class="fa-solid fa-trash"></i></a>`;
+                        }
+                    }
+                ]
+            });
+        if (typeof ($add) == "undefined") var $add = { version: {}, auto: { disabled: false } }; (function ($) {
+            $add.version.Tabs = "1.1.0";
+            $add.Tabs = function (selector, settings) {
+                $(selector).each(function (i, el) {
+                    var $el = $(el);
+                    var S = $.extend({
+                        change: "click"
+                    }, $el.data(), settings);
+                    var $tabHolder = $el.find("[role=tabs]");
+                    $tabHolder.addClass("addui-Tabs-tabHolder");
+                    var $tabs = $tabHolder.children();
+                    var $contentHolder = $el.find("[role=contents]");
+                    $contentHolder.addClass("addui-Tabs-contentHolder");
+                    var $contents = $contentHolder.children();
+                    var active = 0;
+                    $el.addClass("addui-Tabs").attr("role", "").removeAttr("role");
+                    $tabs.addClass("addui-Tabs-tab");
+                    $contents.addClass("addui-Tabs-content").each(function (i, c) {
+                        if ($(c).hasClass("active")) {
+                            $(c).removeClass("active");
+                            active = i; alert()
+                        }
+                    });
+                    $contents.removeClass("addui-Tabs-active").eq(active).addClass("addui-Tabs-active");
+                    $tabs.removeClass("addui-Tabs-active").eq(active).addClass("addui-Tabs-active");
+                    var event = "click";
+                    if (S.change == "hover") event = "mouseenter";
+                    $tabs.on(event, function (e) {
+
+                        $tabs.each(function (i, t) {
+                            if (t == e.target) {
+                                active = i;
+                                $contents.removeClass("addui-Tabs-active").eq(active).addClass("addui-Tabs-active");
+                                $tabs.removeClass("addui-Tabs-active").eq(active).addClass("addui-Tabs-active");
+                                $($.fn.dataTable.tables(true)).DataTable().columns.adjust();
+                            }
+                        });
+                    })
+                });
+                return this;
+            };
+            $.fn.addTabs = function (settings) {
+                $add.Tabs(this, settings);
+            };
+            $add.auto.Tabs = function () {
+                if (!$add.auto.disabled) {
+                    $("[data-addui=tabs]").addTabs();
+                }
+            }
+        })(jQuery);
+        $(function () { for (var k in $add.auto) { if (typeof ($add.auto[k]) == "function") { $add.auto[k](); } } });
+
+    });
+    function AddSpoke(coeId) {
+        post("@apiUrl/CoE/AddSpoke", { 'coeId': coeId })
+    }
+    function AddSpecialist(coeId) {
+        post("@apiUrl/CoE/AddSpecialist", { 'coeId': coeId })
+    }
+    function unmap(id,type) {
+
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: "btn btn-success",
+                cancelButton: "btn btn-danger"
+            },
+            buttonsStyling: false
+        });
+        swalWithBootstrapButtons.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes, Unmap it!",
+            cancelButtonText: "No, cancel!",
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: 'POST',
+                    url: "@apiUrl/CoE/UnMap",
+                    data: { 'MappingKey': coeId, 'MappingValue': id, 'MappingType': type },
+                    success: function (data) {
+                        
+                        if (data.status == "Success") {
+                            Swal.fire({
+                                title: "Unmap!",
+                                text: "Your command has been executed successfully.",
+                                icon: "success"
+                            });
+                            if (type == "CS") {
+                                $('#Spokelist').DataTable().ajax.reload();
+                            }
+                            else {
+                                $('#Specialist').DataTable().ajax.reload();
+                            }
+                        }
+                        else {
+                            Swal.fire({
+                                title: "Unmap!",
+                                text: "Something went wrong.",
+                                icon: "error"
+                            });
+                        }
+                        
+                        
+                    }
+                });
+
+            } else if (
+
+                result.dismiss === Swal.DismissReason.cancel
+            ) {
+
+            }
+        });
+       
+    }
+    var loader = document.getElementById("loader");
+    window.addEventListener("load", function () {
+        loader.style.display = "none";
+    })
+   
+</script>

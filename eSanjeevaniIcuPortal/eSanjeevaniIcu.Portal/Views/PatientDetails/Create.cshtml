@@ -1,0 +1,277 @@
+﻿@model eSanjeevaniIcu.Portal.Models.PatientDetailsViewModel
+@using Microsoft.Extensions.Options;
+@using eSanjeevaniIcu.Portal.Controllers;
+@inject IOptions<ApplicationConfigurations> OptionsApplicationConfiguration
+@{
+    string apiUrl = @OptionsApplicationConfiguration.Value.ApplicationHostUrl;
+    ViewData["Title"] = "Patient Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="~/css/sweet-alert.css" rel="stylesheet" />
+<script src="~/js/sweet-alert.js"></script>
+<div class="PageBorder">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table color-table PageTitle">
+                Create Patient Details
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+
+            <div class="col-md-6">
+                <label>Patient<span class="text-dangar">*</span></label>
+                @Html.DropDownListFor(m => m.PatientId, Model.lstPatientMaster, "Select Patient", new { @class = "form-control", @name = "ddlPatientMaster", ID = "ddlPatientMaster" })
+                <span id="spnPatient" class="text-dangar" style="display:none">Patient is required.</span>
+            </div>
+            <div class="col-md-6">
+                <label>Date<span class="text-dangar">*</span></label>
+                <input type="date" asp-for="Date" class="form-control" id="dtDate" />
+                <span id="spnDate" class="text-dangar" style="display:none">Date is required.</span>
+            </div>
+
+        </div>
+
+        <div class="row">
+            <div class="col-md-12 bg-red mb-10 mt-4">
+                <div class="row align-items-center PageTitle">
+                    <div class="col-sm-6">
+                        <div class="breadcrumbs-area1 clearfix">
+                            <h4 class="page-title1 pull-left font-18">Patient Data</h4>
+                        </div>
+
+                    </div>
+                    <div class="col-sm-6 fr">
+                        <i class="fa fa-plus-circle addsection pull-right"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <table class="table color-table">
+                    <thead class="">
+                        <tr>
+                            <th>Temprature<span class="text-dangar"></span></th>
+                            <th>Respiratory Rate<span class="text-dangar"></span></th>
+                            <th>Oxygen Saturation<span class="text-dangar"></span></th>
+                            <th>Blood Pressure DIA<span class="text-dangar"></span></th>
+                            <th>Blood Pressure SYS<span class="text-dangar"></span></th>
+                            <th>Heart Rate<span class="text-dangar"></span></th>
+                            <th>PatientStatus<span class="text-dangar"></span></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="sections">
+                        <tr class="section">
+                            <td style="display:none">
+                                <input type="hidden" id="hdnPatientDetailId" value="0" />
+                            </td>
+                            <td>
+                                <input type="number" id="txtTemprature" maxlength="10" IsTemprature="true" class="form-control clsTemprature" />
+                                <span class="text-dangar spnTemprature" style="display:none">Temprature is required.</span>
+                            </td>
+                            <td>
+                                <input type="number" id="txtRespiratoryRate" maxlength="10" IsRespiratoryRate="true" class="form-control clsRespiratoryRate" />
+                                <span class="text-dangar spnRespiratoryRate" style="display:none">Respiratory Rate is required.</span>
+                            </td>
+                            <td>
+                                <input type="number" id="txtOxygenSaturation" maxlength="10" IsOxygenSaturation="true" class="form-control clsOxygenSaturation" />
+                                <span class="text-dangar spnOxygenSaturation" style="display:none">Oxygen Saturation is required.</span>
+                            </td>
+                            <td>
+                                <input type="number" id="txtBloodPressureDIA" maxlength="10" IsBloodPressureDIA="true" class="form-control clsBloodPressureDIA" />
+                                <span class="text-dangar spnBloodPressureDIA" style="display:none">Blood Pressure DIA is required.</span>
+                            </td>
+                            <td>
+                                <input type="number" id="txtBloodPressureSYS" maxlength="10" IsBloodPressureSYS="true" class="form-control clsBloodPressureSYS" />
+                                <span class="text-dangar spnBloodPressureSYS" style="display:none">Blood Pressure SYS is required.</span>
+                            </td>
+                            <td>
+                                <input type="number" id="txtHeartRate" maxlength="10" IsHeartRate="true" class="form-control clsHeartRate" />
+                                <span class="text-dangar spnHeartRate" style="display:none">Heart Rate is required.</span>
+                            </td>
+                            <td>
+                                @Html.DropDownListFor(m => m.PatientStatus, Model.lstPatientStatus, "Select Patient Status", new { @class = "form-control", @name = "ddlPatientStatus", ID = "ddlPatientStatus" })
+                                <span class="text-dangar spnPatientStatus" style="display:none">Patient Status is required.</span>
+                            </td>
+                            <td>
+                                <a href="#" class="remove btn btn-primary"><i class="fa fa-trash"></i></a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-md-12 mt-4 mb-5" style="margin-top:20px">
+
+            <input type="submit" value="Save" class="btn btn-primary" id="btnSave" />
+
+            <a asp-action="Index" class="btn btn-primary">Back to List</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    var newRow = $("#sections .section:first").clone();
+    var rowCount = 1;
+    $(".addsection").click(function () {
+        rowCount++;
+        newRow.clone().find(':input').each(function () {
+            var newId = this.id + rowCount;
+            $(this).prev().attr('for', newId);
+            this.id = newId;
+            $(this).val("");
+        }).end()
+            .appendTo("#sections");
+        return false;
+    });
+    //-- Add Row End--//
+    //---Remove Row Start--//
+    $("#sections").on('click', '.remove', function () {
+        $(this).closest('tr').remove();
+        rowCount--;
+        SubTotal();
+        return false;
+    })
+    //--Remove Row End--//
+
+
+    function validateControls() {
+        var result = true;
+
+        if ($("#ddlPatientMaster option:selected").val() == "") {
+            $("#spnPatient").attr("style", "display:inline-block");
+            result = false;
+        }
+        else {
+            $("#spnPatient").attr("style", "display:none");
+        }
+        if ($("#dtDate").val() == "") {
+            $("#spnDate").attr("style", "display:inline-block");
+            result = false;
+        }
+        else {
+            $("#spnDate").attr("style", "display:none");
+        }
+
+        $(".section").each(function () {
+            if ($(this).find('td:eq(1)').find('input').val() == "") {
+                $(this).find('td:eq(1)').find('span').show();
+                result = false;
+            }
+            else {
+                $(this).find('td:eq(1)').find('span').hide();
+            }
+
+            if ($(this).find('td:eq(2)').find('input').val() == "") {
+                $(this).find('td:eq(2)').find('span').show();
+                result = false;
+            }
+            else {
+                $(this).find('td:eq(2)').find('span').hide();
+            }
+
+            if ($(this).find('td:eq(3)').find('input').val() == "") {
+                $(this).find('td:eq(3)').find('span').show();
+                result = false;
+            }
+            else {
+                $(this).find('td:eq(3)').find('span').hide();
+            }
+
+            if ($(this).find('td:eq(4)').find('input').val() == "") {
+                $(this).find('td:eq(4)').find('span').show();
+                result = false;
+            }
+            else {
+                $(this).find('td:eq(4)').find('span').hide();
+            }
+
+            if ($(this).find('td:eq(5)').find('input').val() == "") {
+                $(this).find('td:eq(5)').find('span').show();
+                result = false;
+            }
+            else {
+                $(this).find('td:eq(5)').find('span').hide();
+            }
+
+            if ($(this).find('td:eq(6)').find('input').val() == "") {
+                $(this).find('td:eq(6)').find('span').show();
+                result = false;
+            }
+            else {
+                $(this).find('td:eq(6)').find('span').hide();
+            }
+
+            if ($(this).find('td:eq(7)').find('select option:selected').val() == "") {
+                $(this).find('td:eq(7)').find('span').show();
+                result = false;
+            }
+            else {
+                $(this).find('td:eq(7)').find('span').hide();
+            }
+        })
+        return result;
+    }
+
+    function GetPatientDetailData() {
+        var patientDetailViewModel = [];
+
+        $(".section").each(function () {
+            var detailViewModel = {
+                patientDetailId: 0,
+                patientId: $("#ddlPatientMaster option:selected").val(),
+                date: $("#dtDate").val(),
+                temperature: null,
+                rrRespiratoryRate: null,
+                oxygenSaturationSpo2: null,
+                bloodPressureDia: null,
+                bloodPressureSys: null,
+                heartRate: null,
+                patientStatus: null
+            }
+            detailViewModel.temperature = $(this).find('td:eq(1)').find('input').val();
+            detailViewModel.rrRespiratoryRate = $(this).find('td:eq(2)').find('input').val();
+            detailViewModel.oxygenSaturationSpo2 = $(this).find('td:eq(3)').find('input').val();
+            detailViewModel.bloodPressureDia = $(this).find('td:eq(4)').find('input').val();
+            detailViewModel.bloodPressureSys = $(this).find('td:eq(5)').find('input').val();
+            detailViewModel.heartRate = $(this).find('td:eq(6)').find('input').val();
+            detailViewModel.patientStatus = $(this).find('td:eq(7)').find('select option:selected').val();
+            patientDetailViewModel.push(detailViewModel);
+        })
+        return patientDetailViewModel;
+    }
+
+    $("#btnSave").click(function () {
+        if (validateControls()) {
+            var patientDetailViewModel = GetPatientDetailData();
+            var url = '@apiUrl';
+            url += "/PatientDetails/Create";
+            $.ajax({
+                url: url,
+                type: "POST",
+                dataType: "Json",
+                data: { lstPatientDetailsViewModel: patientDetailViewModel },
+                success: function (response) {
+                    if (response.success) {
+                        swal("Success", response.responseText, "success");
+                        location.href = '@Url.Action("Index", "PatientDetails")';
+                    }
+                    else {
+                        swal("Error", response.responseText, "error");
+                    }
+
+                },
+                error: function (errormessage) {
+                    swal("Error", errormessage.responseText, "error");
+                }
+            })
+        }
+        else {
+            return;
+        }
+    })
+</script>

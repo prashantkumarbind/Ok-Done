@@ -1,0 +1,151 @@
+﻿@model eSanjeevaniIcu.Portal.Models.CoE.MappingViewModel
+@using Microsoft.Extensions.Options;
+@using eSanjeevaniIcu.Portal.Controllers;
+
+@inject IOptions<ApplicationConfigurations> OptionsApplicationConfiguration
+@{
+    string apiUrl = @OptionsApplicationConfiguration.Value.ApplicationHostUrl;
+    ViewData["Title"] = "CoE";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.8.1/css/bootstrap-select.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.8.1/js/bootstrap-select.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link href="~/css/coe.css" rel="stylesheet" />
+<script src="~/js/ceo.js"></script>
+<style>
+    .avatar-upload {
+        position: relative;
+        max-width: 120px;
+        margin: 83px auto 0;
+    }
+
+        .avatar-upload .avatar-edit {
+            position: absolute;
+            right: -7px;
+            z-index: 1;
+            top: -67px;
+        }
+
+        .avatar-upload img {
+            width: 200px;
+            height: 200px;
+        }
+
+        .avatar-upload .avatar-edit input + label:after {
+            content: "\f040";
+            font-family: 'FontAwesome';
+            color: #757575;
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            right: 0;
+            text-align: center;
+            margin: auto;
+        }
+
+        .avatar-upload .avatar-edit input + label {
+            display: inline-block;
+            width: 34px;
+            height: 34px;
+            margin-bottom: 0;
+            border-radius: 100%;
+            background: #FFFFFF;
+            border: 1px solid transparent;
+            box-shadow: 0px 2px 4px 0px rgb(0 0 0 / 12%);
+            cursor: pointer;
+            font-weight: normal;
+            transition: all 0.2s ease-in-out;
+        }
+
+    #imageUpload {
+        display: none !important;
+    }
+
+</style>
+<div class="PageBorder">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table color-table PageTitle">
+                Map Spoke
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <form asp-action="AddSpoke">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="col-md-12">
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+                            <label>CoE <span class="text-danger">*</span></label>
+                            @Html.DropDownListFor(m => m.lstCoEMaster, Model.lstCoEMaster, "Select CoE", new { @class = "form-control", @name = "ddlCoeMaster", ID = "ddlCoeMaster" })
+                            <span id="spnCoE" class="text-dangar" style="display:none">Coe is required</span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Spokes <span class="text-danger">*</span></label>
+                            @Html.DropDownListFor(m => m.lstSpokeMaster, Model.lstSpokeMaster, "Select Spoke", new { @class = "form-control", @name = "ddlSpokeMaster", ID = "ddlSpokeMaster" })
+                            <span id="spnSpoke" class="text-dangar" style="display:none">Spoke is required</span>
+                        </div>
+
+
+                    </div>
+                </div>
+                <!-- Contact section End -->
+                <div class="row mb-5">
+                    <div class="col-md-12 text-center">
+                        <button type="button" onclick="AddSpokeMapping();" class="btn btn-primary">Save</button>
+                        <div onclick="Back(@ViewBag.CoeId);" class="btn btn-primary">Back to List</div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+    
+</div>
+<script>
+    var coeId = '@ViewBag.CoeId';
+    function AddSpokeMapping() {
+        let coeId = '@ViewBag.CoeId';
+        let spoke = $('#ddlSpokeMaster').val();
+        let type = 'CS';
+
+        $.ajax({
+            type: 'POST',
+            url: "@apiUrl/CoE/AddMapping",
+            data: { 'mappingKey': coeId, 'mappingValue': spoke, 'mappingType': type },
+            success: function (data) {
+                if (data.status == "Success") {
+                    swal.fire({
+                        title: "Added!",
+                        text: "Your record has been Added.",
+                        icon: "success"
+                    });
+                }
+                else {
+                    swal.fire({
+                        title: "Faliure!",
+                        text: data.message,
+                        icon: "error"
+                    });
+                }
+
+            }
+        });
+    }
+    function Back(coeId) {
+        let url = "@apiUrl/CoE/ManageCoE"
+        post(url, {coeId: coeId})
+    }
+    function filterSelect() {
+        $('select[name="lstCoEMaster"]').find('option[value="@ViewBag.coeId"]').attr("selected", true);
+        $('select[name="lstCoEMaster"]').attr("disabled", true)
+    }
+    $(document).ready(function () {
+        filterSelect()
+    });
+</script>

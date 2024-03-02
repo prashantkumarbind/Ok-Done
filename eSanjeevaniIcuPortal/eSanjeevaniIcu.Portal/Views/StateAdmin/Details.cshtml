@@ -1,0 +1,128 @@
+﻿@model eSanjeevaniIcu.Portal.Models.StateAdminViewModel
+
+@using Microsoft.Extensions.Options;
+@using eSanjeevaniIcu.Portal
+@using eSanjeevaniIcu.Portal.Controllers;
+
+@inject IOptions<ApplicationConfigurations> OptionsApplicationConfiguration
+@{
+    string apiUrl = @OptionsApplicationConfiguration.Value.ApplicationHostUrl;
+    ViewData["Title"] = "StateAdmin Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.14.1/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link href="~/css/sweet-alert.css" rel="stylesheet" />
+@* <script src="~/js/sweet-alert.js"></script> *@
+
+<script>
+    $(document).ready(function () {
+        if ('@TempData["SubmitResult"]' == '@Common.MsgSaveSuccess') {
+            swal("Success", '@OptionsApplicationConfiguration.Value.MsgSaveSuccess', "success");
+        }
+        else if ('@TempData["SubmitResult"]' == '@Common.MsgUpdateSuccess') {
+            swal("Success", '@OptionsApplicationConfiguration.Value.MsgUpdateSuccess', "success");
+        }
+        else if ('@TempData["SubmitResult"]' == '@Common.MsgDeleteSuccess') {
+            swal("Success", '@OptionsApplicationConfiguration.Value.MsgDeleteSuccess', "success");
+        }
+
+    });
+
+
+</script>
+
+
+<div class="PageBorder">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table color-table PageTitle">
+                State Admin Details
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <dl class="row">
+                <dt class="col-sm-2">First Name</dt>
+                <dd class="col-sm-10">: @Model.SurName @Model.FirstName @Model.MiddleName @Model.LastName</dd>
+
+                <dt class="col-sm-2">State</dt>
+                <dd class="col-sm-10">: @Model.StateName</dd>
+
+                <dt class="col-sm-2">Phone Number</dt>
+                <dd class="col-sm-10">: @Model.PhoneNumber</dd>
+
+                <dt class="col-sm-2">Email</dt>
+                <dd class="col-sm-10">: @Model.Email</dd>
+
+                <dt class="col-sm-2">Designation</dt>
+                <dd class="col-sm-10">: @Model.Designation</dd>
+
+                <dt class="col-sm-2">Place of Work</dt>
+                <dd class="col-sm-10">: @Model.PlaceOfWork</dd>
+
+                <dt class="col-sm-2">Address</dt>
+                <dd class="col-sm-10">: @Model.Address</dd>
+                
+            </dl>
+
+            <div class="row mb-5">
+                <div class="col-md-12 text-center">
+                    <a asp-action="Edit" asp-route-id="@Model.StateAdminId" class="btn btn-primary">Edit</a>
+                    <a asp-controller="State" asp-action="Index" class="btn btn-primary">Back to List</a>
+                    <a  onclick="Delete(@Model.StateAdminId)" class="btn btn-primary">Delete</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    function Delete(id) {
+
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: "btn btn-success",
+                cancelButton: "btn btn-danger"
+            },
+            buttonsStyling: false
+        });
+        swalWithBootstrapButtons.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes, delete it!",
+            cancelButtonText: "No, cancel!",
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: 'Post',
+                    url: "@apiUrl/StateAdmin/DeleteStateAdmin",
+                    data: { 'id': id },
+                    success: function (data) {
+                        swalWithBootstrapButtons.fire({
+                            title: "Deleted!",
+                            text: "Your record has been deleted.",
+                            icon: "success"
+                        });
+                        window.location.href = "/State/Index";
+                        // window.location.reload();
+                        // $('#tblState').dataTable().ajax.reload();
+                    }
+                });
+
+            } else if (
+
+                result.dismiss === Swal.DismissReason.cancel
+            ) {
+
+            }
+        });
+    }
+</script>
+

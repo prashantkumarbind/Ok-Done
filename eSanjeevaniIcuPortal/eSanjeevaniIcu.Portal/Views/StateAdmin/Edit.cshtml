@@ -1,0 +1,102 @@
+﻿@model eSanjeevaniIcu.Portal.Models.StateAdminViewModel
+
+@using Microsoft.Extensions.Options;
+@using eSanjeevaniIcu.Portal
+@using eSanjeevaniIcu.Portal.Controllers;
+
+@inject IOptions<ApplicationConfigurations> OptionsApplicationConfiguration
+@{
+    string apiUrl = @OptionsApplicationConfiguration.Value.ApplicationHostUrl;
+    ViewData["Title"] = "Edit State Admin";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script>
+    $(document).ready(function () {
+        if ('@TempData["SubmitResult"]' == '@Common.MsgUpdateSuccess') {
+            swal("Success", '@OptionsApplicationConfiguration.Value.MsgUpdateSuccess', "success");
+        }
+    });
+</script>
+
+<div class="PageBorder">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table color-table PageTitle">
+                Edit State Admin
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <form asp-action="Edit">
+                <input type="hidden" asp-for="StateAdminId" />
+                <input type="hidden" asp-for="StateId" />
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-4 mb-3">
+                            <label for="FirstName">First Name<span class="text-danger">*</span></label>
+                            @* <input type="hidden" asp-for="StateId" /> *@
+                            <div style="display:flex">
+                                <select class="form-control" asp-for="SurName" style="width:70px !important;">
+                                    <option value="Mr.">Mr.</option>
+                                    <option value="Ms.">Ms.</option>
+                                    <option value="Mrs.">Mrs.</option>
+                                </select>
+                                <input asp-for="FirstName" type="text" maxlength="50" class="form-control" id="txtFirstName" placeholder="First Name">
+                            </div>
+                            <span id="spnFirstName" class="text-danger" style="display:none">First Name is required</span>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="validationCustom01">Middle Name</label>
+                            <input asp-for="MiddleName" maxlength="50" type="text" class="form-control" id="txtMiddleName" placeholder="Middle Name">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="validationCustom01">Last Name</label>
+                            <input asp-for="LastName" maxlength="50" type="text" class="form-control" id="txtLastName" placeholder="Last Name">
+                            <div class="valid-feedback">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="col-md-6 mb-3">
+                            <label for="PhoneNumber">Phone Number<span class="text-danger">*</span></label>
+                            <input type="text" asp-for="PhoneNumber" maxlength="20" class="form-control" id="txtContactNumber" placeholder="Phone Number">
+                            <span id="spnPhoneNumber" class="text-danger" style="display:none">Phone Number is required</span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="Email">Email<span class="text-danger">*</span></label>
+                            <input type="text" asp-for="Email" maxlength="20" class="form-control" id="txtEmailAddress" placeholder="Email">
+                            <span id="spnEmail" class="text-danger" style="display:none">Email is required</span>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="col-md-6 mb-3">
+                            <label for="Designation">Designation</label>
+                            <input asp-for="Designation" type="text" class="form-control" id="txtRegistrationNumber" placeholder="Designation">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="PlaceOfWork">Place of Work<span class="text-danger">*</span></label>
+                            <input type="text" asp-for="PlaceOfWork" maxlength="100" class="form-control" id="txtContactNumber" placeholder="Place of Work">
+                            <span id="spnPlaceOfWork" class="text-danger" style="display:none">Place Of Work is required</span>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="col-md-12 mb-3">
+                            <label for="Address">Address</label>
+                            <textarea asp-for="Address" rows="3" class="form-control" id="txtAddressLine1" placeholder="Address"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-5">
+                    <div class="col-md-12 text-center">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <a asp-controller="State" asp-action="Index" class="btn btn-primary">Cancel</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

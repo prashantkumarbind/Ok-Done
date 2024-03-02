@@ -1,0 +1,89 @@
+﻿@model eSanjeevaniIcu.Portal.Models.GroupPermissionViewModel
+
+@{
+    ViewData["Title"] = "Group Permission";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/assets/Multiselect/bootstrap.min.css" rel="stylesheet" />
+<link href="~/assets/Multiselect/bootstrap-multiselect.css" rel="stylesheet" />
+<script src="~/assets/Multiselect/jquery.min.js"></script>
+<script src="~/assets/Multiselect/bootstrap.min.js"></script>
+<script src="~/assets/Multiselect/bootstrap-multiselect.js"></script>
+<style>
+    .btn-group .show {
+        background-color: lavender !important;
+        height: 200px;
+    }
+</style>
+<script>
+    $(document).ready(function () {
+        $('#ddlMenu').multiselect({
+            selectAllValue: 'multiselect-all',
+            enableCaseInsensitiveFiltering: true,
+            enableFiltering: true,
+            maxHeight: '300',
+            buttonWidth: '100%',
+            numberDisplayed: 2,
+            nonSelectedText: 'Select Menu',
+        });
+
+        $("#ddlMenu").change(function () {
+            $("#hfMenuIds").val('');
+            var menuId = $("#ddlMenu").val();
+            if (menuId == null) {
+                return;
+            }
+            var menuIds = ""
+            if (menuId.length > 0) {
+                for (i = 0; i < menuId.length; i++) {
+                    menuIds += menuId[i] + ",";
+                }
+                menuIds = menuIds.substring(0, menuIds.length - 1);
+            }
+            $("#hfMenuIds").val(menuIds);
+        });
+    });
+</script>
+
+<div class="PageBorder">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table color-table PageTitle">
+                Create Group Permission
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <label class="control-label">Group</label>
+                    @Html.DropDownListFor(m => m.GroupId, Model.lstGroup, "Select Group", new { @class = "form-control", @name = "ddlGroup", ID = "ddlGroup" })
+                    <span asp-validation-for="GroupId" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Menu</label>
+                    @*@Html.DropDownListFor(m => m.MenuId, Model.lstMenus, "Select Menu", new { @class = "form-control", @name = "ddlMenu", ID = "ddlMenu" })*@
+                    <input type="hidden" asp-for="MenuIds" id="hfMenuIds" />
+                    @Html.ListBoxFor(m => m.selectedMenuIds, Model.lstMenus, new { @name = "ddlMenu", ID = "ddlMenu" })
+                    <span asp-validation-for="MenuId" class="text-danger"></span>
+                </div>
+                @*<div class="form-group">
+                        <label asp-for="Status" class="control-label"></label>
+                        <input asp-for="Status" class="form-control" />
+                        <span asp-validation-for="Status" class="text-danger"></span>
+                    </div>*@
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-12 text-center">
+                            <button type="submit" class="btn btn-primary">Create</button>
+                            <a asp-action="Index" class="btn btn-primary">Back to List</a>
+
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

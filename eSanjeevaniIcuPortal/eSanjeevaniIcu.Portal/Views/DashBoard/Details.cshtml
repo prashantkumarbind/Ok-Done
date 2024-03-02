@@ -1,0 +1,1021 @@
+﻿@model eSanjeevaniIcu.Portal.Models.DasboardViewModel
+@using Microsoft.Extensions.Options;
+@using eSanjeevaniIcu.Portal.Controllers;
+@using eSanjeevaniIcu.Portal;
+
+@inject IOptions<ApplicationConfigurations> OptionsApplicationConfiguration
+@{
+    string apiUrl = @OptionsApplicationConfiguration.Value.ApplicationHostUrl;
+    string apiReactUrl = @OptionsApplicationConfiguration.Value.ApplicationHostReactUrl;
+    ViewData["Title"] = "Dashboard::Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
+<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap4.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.14.1/moment.min.js"></script>
+<link href="~/css/sweet-alert.css" rel="stylesheet" />
+<script src="~/js/sweet-alert.js"></script>
+<script>
+    $(document).ready(function () {
+        if ('@TempData["SubmitResult"]' == '@Common.MsgSaveSuccess') {
+            swal("Success", '@OptionsApplicationConfiguration.Value.MsgSaveSuccess', "success");
+        }
+        else if ('@TempData["SubmitResult"]' == '@Common.MsgUpdateSuccess') {
+            swal("Success", '@OptionsApplicationConfiguration.Value.MsgUpdateSuccess', "success");
+        }
+        else if ('@TempData["SubmitResult"]' == '@Common.MsgDeleteSuccess') {
+            swal("Success", '@OptionsApplicationConfiguration.Value.MsgDeleteSuccess', "success");
+        }
+    });
+
+
+</script>
+<style>
+    .loader {
+        height: 30px;
+        aspect-ratio: 6;
+        --c: #0000 64%,#000 66% 98%,#0000 101%;
+        background: radial-gradient(35% 146% at 50% 159%,var(--c)) 0 0, radial-gradient(35% 146% at 50% -59%,var(--c)) 25% 100%;
+        background-size: calc(100%/3) 50%;
+        background-repeat: repeat-x;
+        clip-path: inset(0 100% 0 0);
+        animation: l2 1s infinite linear;
+    }
+</style>
+<script type="text/javascript" src="https://cdn.canvasjs.com/canvasjs.min.js"></script>
+<script src="~/js/moment.js"></script>
+<style>
+    .heartRateCircle {
+        border: 1px solid #f44336;
+        border-radius: 20px;
+        background-color: #f44336;
+        color: black;
+        padding-top: 3px;
+    }
+
+
+    .heartRateIcon {
+        font-size: 25px !important;
+        color: #f44336;
+    }
+
+    .heartRateCircle > h4 {
+        font-size: 14px !important;
+        padding-top: 5px !important;
+    }
+
+    .bloodPressureCircle {
+        border: 1px solid #ff9300;
+        border-radius: 20px;
+        background-color: #ff9300;
+        color: black;
+        padding-top: 3px;
+    }
+
+        .bloodPressureCircle > h4 {
+            font-size: 14px !important;
+            padding-top: 5px !important;
+        }
+
+    .bloodPressureIcon {
+        font-size: 25px !important;
+        color: #ff9300;
+    }
+
+    .oxygenCircle {
+        border: 1px solid #7afc06;
+        border-radius: 20px;
+        background-color: #7afc06;
+        color: black;
+        padding-top: 3px;
+    }
+
+        .oxygenCircle > h4 {
+            font-size: 14px !important;
+            padding-top: 5px !important;
+        }
+
+    .oxygenIcon {
+        font-size: 25px !important;
+        color: #7afc06;
+    }
+
+    .respirationCircle {
+        border: 1px solid #00b1fa;
+        border-radius: 20px;
+        background-color: #00b1fa;
+        color: black;
+        padding-top: 3px;
+    }
+
+        .respirationCircle > h4 {
+            font-size: 14px !important;
+            padding-top: 5px !important;
+        }
+
+    .respirationIcon {
+        font-size: 25px !important;
+        color: #00b1fa;
+    }
+
+    .tempratureCircle {
+        border: 1px solid #e7004f;
+        border-radius: 20px;
+        background-color: #e7004f;
+        color: black;
+        padding-top: 3px;
+    }
+
+        .tempratureCircle > h4 {
+            font-size: 14px !important;
+            padding-top: 5px !important;
+        }
+
+    .tempratureIcon {
+        font-size: 25px !important;
+        color: #e7004f;
+    }
+
+    .patientDetails div {
+        text-align: left;
+        /* margin-bottom: 10px;
+                margin-top: 10px; */
+    }
+
+    .patientDetails {
+        padding: 8px;
+        background: #6cb566;
+        color: white;
+    }
+
+    .card-header .title {
+        font-size: 17px;
+        color: #000;
+    }
+
+    .card-header .accicon {
+        float: right;
+        font-size: 20px;
+        width: 1.2em;
+    }
+
+    .card-header {
+        cursor: pointer;
+        border-bottom: none;
+    }
+
+    .card {
+        border: 1px solid #ddd;
+    }
+
+    .accordion .card {
+        margin-bottom: 5px !important
+    }
+
+    .accordion .card-header {
+        padding: 0.45rem 1.25rem;
+    }
+
+    .card-body {
+        border-top: 1px solid #ddd;
+    }
+
+    .card-header:not(.collapsed) .rotate-icon {
+        transform: rotate(180deg);
+    }
+
+    .plr0 {
+        padding-left: 0px !important;
+        padding-right: 0px !important;
+    }
+
+    .dashboardDetailValuesSpan {
+        font-size: 24px;
+        font-weight: 600;
+    }
+</style>
+<style>
+    #modalPatientCommunicationComment .modal-dialog {
+        max-width: 450px;
+    }
+
+    .commentDetails {
+        box-shadow: 4px 3px 5px #88888857;
+        padding: 8px;
+        border-radius: 10px;
+        color: #000000 !important;
+        background-color: #F3F8FB;
+    }
+
+        .commentDetails.currentUser {
+            box-shadow: 4px 3px 5px #88888857;
+            padding: 8px;
+            border-radius: 10px;
+            color: #000000 !important;
+            background-color: #6cb566;
+        }
+
+    span.date-comment {
+        float: right;
+        text-align: right;
+    }
+
+    span.time-comment {
+        float: right;
+    }
+
+    .commentDetails span {
+        color: #000 !important;
+    }
+
+    .userName-comment {
+        font-style: italic;
+    }
+
+    #tbl_gridList {
+        height: 250px;
+        overflow: auto;
+    }
+
+    .cm-padding-8 {
+        padding: 8px;
+    }
+
+    label.comments {
+        width: 80%;
+        word-break: break-word;
+        /* float: left; */
+        text-align: left;
+    }
+</style>
+<div class="PageBorder">
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table color-table PageTitle">
+                <div class="row">
+                    <div class="col-md-8">
+                        Details
+                    </div>
+                    <div class="col-md-4" style="text-align:right">
+                        @if (Model.PatientId != 0)
+                        {
+                            <a class="btn btn-primary" style="color:white" onclick="return PatientCommunicationDetalisModal('@Model.PatientId')">Communication</a>
+                        }
+                        @* <button class="btn btn-primary" id="btncall"><i class="fa fa-phone"></i> Call</button> *@
+                        <a class="btn btn-primary" asp-action="Index">Back</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="table text-center patientDetails" style="border: 1px solid lightblue;border-radius: 10px;">
+        <input type="hidden" id="hdnPatientId" value="@Model.PatientId" />
+        <input type="hidden" id="hdnLoggedInUserName" value="@Model.LoggedInUserName" />
+        <input type="hidden" id="hdnBedNo" value="@Model.BedNo" />
+        <div class="row table-head">
+            <div class="col-md-1" style="font-weight: bold;color: black;font-size: 16px;">
+                Patient#
+            </div>
+            <div class="col-md-2" style="font-weight: bold;font-size: 20px;">
+                : @Model.PatientId
+            </div>
+            <div class="col-md-1" style="font-weight: bold;color: black;font-size: 16px;">
+                Name
+            </div>
+            <div class="col-md-2" style="font-weight: bold;font-size: 20px;">
+                : @Model.PatientName
+            </div>
+            <div class="col-md-1" style="font-weight: bold;color: black;font-size: 16px;">
+                Gender
+            </div>
+            <div class="col-md-2" style="font-weight: bold;font-size: 20px;">
+                : @(Model.Gender != null ? (Model.Gender == 1 ? "Male" : (Model.Gender == 2 ? "Female" : "")) : "")
+            </div>
+            <div class="col-md-1" style="font-weight: bold;color: black;font-size: 16px;">
+                Age
+            </div>
+            <div class="col-md-2" style="font-weight: bold;font-size: 20px;">
+                : @(Model.Age != null ? Model.Age : "")
+            </div>
+        </div>
+        <div class="row table-head">
+            <div class="col-md-1" style="font-weight: bold;color: black;font-size: 16px;">
+                Spoke
+            </div>
+            <div class="col-md-2" style="font-weight: bold;font-size: 20px;">
+                : @Model.SpokeHospitalName
+            </div>
+            <div class="col-md-1" style="font-weight: bold;color: black;font-size: 16px;">
+                ICU No
+            </div>
+            <div class="col-md-2" style="font-weight: bold;font-size: 20px;">
+                : @Model.IcuNo
+            </div>
+            <div class="col-md-1" style="font-weight: bold;color: black;font-size: 16px;">
+                Bed No
+            </div>
+            <div class="col-md-2" style="font-weight: bold;font-size: 20px;">
+                : @Model.BedNo
+            </div>
+            <div class="col-md-1" style="font-weight: bold;color: black;font-size: 16px;">
+                Adm. Dt
+            </div>
+            <div class="col-md-2" style="font-weight: bold;font-size: 20px;">
+                : @Model.AdmissionDate.ToString("dd-MM-yyyy")
+            </div>
+        </div>
+        
+       
+    </div>
+
+   @*  <div class="row text-center patientDetails" style="border: 1px solid lightblue;border-radius: 10px;">
+       <input type="hidden" id="hdnPatientId" value="@Model.PatientId" />
+        <input type="hidden" id="hdnLoggedInUserName" value="@Model.LoggedInUserName" />
+        <input type="hidden" id="hdnBedNo" value="@Model.BedNo" />
+        <div class="col-md-1.5" style="font-weight: bold;font-size: 20px;">Patient Id</div>
+        <div class="col-md-1" style="font-weight: bold;font-size: 20px;">: @Model.PatientCode</div>
+        <div class="col-md-1.5" style="font-weight: bold;text-align:right;font-size: 20px;">Patient Name</div>
+        <div class="col-md-2.5" style="font-weight: bold;font-size: 20px;">: @Model.PatientName</div>
+        <div class="col-md-1 plr0" style="font-weight: bold;text-align:right;font-size: 20px;">Gender</div>
+        <div class="col-md-1 plr0" style="font-weight: bold;font-size: 20px;">: @(Model.Gender != null ? (Model.Gender == 1 ? "Male" : (Model.Gender == 2 ? "Female" : "")) : "")</div>
+        <div class="col-md-.8" style="font-weight: bold;text-align:right;font-size: 20px;">Age</div>
+        <div class="col-md-1" style="font-weight: bold;font-size: 20px;">: @(Model.Age != null ? Model.Age : "")</div>
+
+        <div class="col-md-.8" style="font-weight: bold;text-align:left;font-size: 20px;">Bed No.</div>
+        <div class="col-md-2" style="font-weight: bold;text-align:left;font-size: 20px;">: @Model.BedNo</div>
+        <div class="col-md-1.5" style="font-weight: bold;text-align:right;font-size: 20px;">Spoke Name</div>
+        <div class="col-md-4" style="font-weight: bold;text-align:left;font-size: 20px;">: @Model.SpokeHospitalName</div>
+        <div class="col-md-.8" style="font-weight: bold;text-align:right;font-size: 20px;">Admit Date</div>
+        <div class="col-md-2" style="font-weight: bold;text-align:left;font-size: 20px;">: @Model.AdmissionDate.ToString("dd-MM-yyyy")</div>
+        <div class="col-md-2" style="font-weight: bold;text-align:left;font-size: 20px;">ICU : SHBICU01</div>        
+    </div> *@
+
+    <div class="row text-center mt-1">
+        <div class="col-md-2" style="border: 0px solid lightblue;border-radius: 10px;">
+            <div class="col-md-2"><div class="heartRateIcon"><i class="fa fa-heartbeat"></i></div></div>
+            <div class="col-md-4 mt-2"><div class="heartRateValues"><span class="dashboardDetailValuesSpan" id="lblHeartRateValue">@(Model.HeartRate != null ? Model.HeartRate : "")</span></div></div>
+           @*  <div class="col-md-6"><div class="heartRateCircle"><h4>Heart Rate</h4></div></div> *@
+        </div>
+        <div class="col-md-2" style="border: 0px solid lightblue;border-radius: 10px;">
+            <div class="col-md-2"><div class="bloodPressureIcon"><i class="fa fa-solid fa-wave-square"></i></div></div>
+            <div class="col-md-4 mt-2"><div class="bloodPressureValues"><span class="dashboardDetailValuesSpan" id="lblBloodPressureValue">@(Model.BloodPressureSys != null ? Decimal.Truncate(Convert.ToInt32(Model.BloodPressureSys)) : "")/@(Model.BloodPressureDia != null ? Decimal.Truncate(Convert.ToInt32(Model.BloodPressureDia)) : "")</span></div></div>
+            @* <div class="col-md-6"><div class="bloodPressureCircle"><h4>Blood Pressure</h4></div></div> *@
+        </div>
+        <div class="col-md-2" style="border: 0px solid lightblue;border-radius: 10px;">
+            <div class="col-md-2"><div class="oxygenIcon"><i class="fa fa-tint"></i></div></div>
+            <div class="col-md-4 mt-2"><div class="oxygenValues"><span class="dashboardDetailValuesSpan" id="lblOxygenValue">@(Model.OxygenSaturationSpo2 != null ? Model.OxygenSaturationSpo2 : "")</span></div></div>
+           @*  <div class="col-md-6"><div class="oxygenCircle"><h4>Oxygen  </h4></div></div> *@
+        </div>
+        <div class="col-md-2" style="border: 0px solid lightblue;border-radius: 10px;">
+            <div class="col-md-2"><div class="respirationIcon"><i class="fa-solid fa-lungs"></i></div></div>
+            <div class="col-md-4 mt-2"><div class="respirationValues"><span class="dashboardDetailValuesSpan" id="lblRespirationValue">@(Model.RrRespiratoryRate != null ? Model.RrRespiratoryRate : "")</span></div></div>
+           @*  <div class="col-md-6"><div class="respirationCircle"><h4>Respiration</h4></div></div> *@
+        </div>
+        <div class="col-md-2" style="border: 0px solid lightblue;border-radius: 10px;">
+            <div class="col-md-2"> <div class="tempratureIcon"><i class="fa fa-thermometer"></i></div></div>
+            <div class="col-md-4 mt-2"><div class="tempratureValues"><span class="dashboardDetailValuesSpan" id="lblTempratureValue">@(Model.Temperature != null ? Model.Temperature : "")</span></div></div>
+            @* <div class="col-md-6"><div class="tempratureCircle"><h4>Temprature</h4></div></div> *@
+        </div>
+    </div>
+    <div class="row text-center mt-1">
+        <div class="col-md-3" style="border: 1px solid lightblue;border-radius: 10px;">
+            <div class="row">
+                <div id="heartRateChartContainer" style="height: 80px; width: 100%;">
+                </div>
+            </div>
+            <div class="row">
+                <div id="bpChartContainer" style="height: 80px; width: 100%;">
+                </div>
+            </div>
+            <div class="row">
+                <div id="oxygenSaturationSpo2ChartContainer" style="height: 80px; width: 100%;">
+                </div>
+            </div>
+            <div class="row">
+                <div id="rRRespiratoryRateChartContainer" style="height: 80px; width: 100%;">
+                </div>
+            </div>
+            <div class="row">
+                <div id="temperatureChartContainer" style="height: 80px; width: 100%;">
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4" style="border: 1px solid lightblue;border-radius: 10px;">
+            <div class="accordion" id="accordionExample">
+                <div class="card mt-2">
+                    <div class="card-header" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true">
+                        <span class="title" style="font-weight: bold;font-size: 23px;">Chief Complaints </span>
+                        <span class="accicon"><i class="fas fa-angle-down rotate-icon"></i></span>
+                    </div>
+                    <div id="collapseOne" class="collapse show" data-parent="#accordionExample">
+                        <div class="card-body" style="font-weight: bold;font-size: 18px;">
+                            About Complaint.
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                        <span class="title" style="font-weight: bold;font-size: 23px;">History</span>
+                        <span class="accicon"><i class="fas fa-angle-down rotate-icon"></i></span>
+                    </div>
+                    <div id="collapseTwo" class="collapse" data-parent="#accordionExample">
+                        <div class="card-body" style="font-weight: bold;font-size: 18px;">
+                            About History.
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false">
+                        <span class="title" style="font-weight: bold;font-size: 23px;">Active Medication</span>
+                        <span class="accicon"><i class="fas fa-angle-down rotate-icon"></i></span>
+                    </div>
+                    <div id="collapseThree" class="collapse" data-parent="#accordionExample">
+                        <div class="card-body" style="font-weight: bold;font-size: 18px;">
+                            About Medication.
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header collapsed" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false">
+                        <span class="title" style="font-weight: bold;font-size: 23px;">Health Record</span>
+                        <span class="accicon"><i class="fas fa-angle-down rotate-icon"></i></span>
+                    </div>
+                    <div id="collapseFour" class="collapse" data-parent="#accordionExample">
+                        <div class="card-body" style="font-weight: bold;font-size: 18px;">
+                            About Health Recvords.
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header collapsed" data-toggle="collapse" data-target="#collapseFive" aria-expanded="false">
+                        <span class="title" style="font-weight: bold;font-size: 23px;">Query</span>
+                        <span class="accicon"><i class="fas fa-angle-down rotate-icon"></i></span>
+                    </div>
+                    <div id="collapseFive" class="collapse" data-parent="#accordionExample">
+                        <div class="card-body" style="font-weight: bold;font-size: 18px;">
+                            About Query.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-5" style="border: 1px solid lightblue;border-radius: 10px;">
+            <div id="iFrameDiv" style="display : none" class="row mb-2">
+                <iframe id="videoCallIframe" allow="camera; microphone" width="460" height="460"></iframe>
+            </div>
+            <div id="CheckSpecialistDiv" class="row mb-2">
+                <table id="tblSpecialist" class="table-hover table-striped row-border table-sm" style="width:100%;">
+                    <thead>
+                        <tr>
+                            <th> Specialist Name </th>
+                            <th> Mobile No. </th>
+                            <th> Call </th>
+                            <th> Status </th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            @* <div class="row">
+                <div class="col-md-12 mt-3 mb-5" style="display: flex;">
+                    <div class="col-md-2"><div class="heartRateIcon"><i class="fa fa-heartbeat"></i></div></div>
+                    <div class="col-md-4 mt-2"><div class="heartRateValues"><span class="dashboardDetailValuesSpan" id="lblHeartRateValue">@(Model.HeartRate != null ? Model.HeartRate : "")</span></div></div>
+                    <div class="col-md-6"><div class="heartRateCircle"><h4>Heart Rate</h4></div></div>
+                </div>
+                <div class="col-md-12 mb-5" style="display: flex;">
+                    <div class="col-md-2"><div class="bloodPressureIcon"><i class="fa fa-solid fa-wave-square"></i></div></div>
+                    <div class="col-md-4 mt-2"><div class="bloodPressureValues"><span class="dashboardDetailValuesSpan" id="lblBloodPressureValue">@(Model.BloodPressureSys != null ? Decimal.Truncate(Convert.ToInt32(Model.BloodPressureSys)) : "")/@(Model.BloodPressureDia != null ? Decimal.Truncate(Convert.ToInt32(Model.BloodPressureDia)) : "")</span></div></div>
+                    <div class="col-md-6"><div class="bloodPressureCircle"><h4>Blood Pressure</h4></div></div>
+                </div>
+                <div class="col-md-12 mb-5">
+                    <div class="row">
+                        <div class="col-md-2"><div class="oxygenIcon"><i class="fa fa-tint"></i></div></div>
+                        <div class="col-md-4 mt-2"><div class="oxygenValues"><span class="dashboardDetailValuesSpan" id="lblOxygenValue">@(Model.OxygenSaturationSpo2 != null ? Model.OxygenSaturationSpo2 : "")</span></div></div>
+                        <div class="col-md-6"><div class="oxygenCircle"><h4>Oxygen Saturation</h4></div></div>
+                    </div>
+                </div>
+                <div class="col-md-12 mb-5 mt-1" style="display: flex;">
+                    <div class="col-md-2"><div class="respirationIcon"><i class="fa-solid fa-lungs"></i></div></div>
+                    <div class="col-md-4 mt-2"><div class="respirationValues"><span class="dashboardDetailValuesSpan" id="lblRespirationValue">@(Model.RrRespiratoryRate != null ? Model.RrRespiratoryRate : "")</span></div></div>
+                    <div class="col-md-6"><div class="respirationCircle"><h4>Respiration</h4></div></div>
+                </div>
+                <div class="col-md-12 mt-2" style="display: flex;">
+                    <div class="col-md-2"> <div class="tempratureIcon"><i class="fa fa-thermometer"></i></div></div>
+                    <div class="col-md-4 mt-2"><div class="tempratureValues"><span class="dashboardDetailValuesSpan" id="lblTempratureValue">@(Model.Temperature != null ? Model.Temperature : "")</span></div></div>
+                    <div class="col-md-6"><div class="tempratureCircle"><h4>Temprature</h4></div></div>
+                </div>
+            </div> *@
+        </div>
+       
+    </div>
+
+    <div class="row text-center mt-4 mb-4">
+        <div class="col-md-4">
+        </div>
+        <div class="col-md-4">
+        </div>
+        <div class="col-md-4">
+        </div>
+    </div>
+    <!-- The Modal for Comment -->
+    <div class="modal" id="modalPatientCommunicationComment" style="display:none">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!--Comment Modal Header -->
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <span id="spnPatientCommunicationCommentsDetails"></span>
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <!--Comment Modal body -->
+                <form asp-action="PatientCommunicationComments">
+                    <div class="modal-body">
+                        <div asp-validation-summary="ModelOnly"></div>
+                        <input type="hidden" id="PatientId" name="PatientId" />
+                        <div id="tbl_gridList">
+                        </div>
+                        <div class="cm-padding-8 mb-3">
+                            <label for="Remarks">Comments</label>
+                            <textarea type="text" id="txtComments" class="form-control" placeholder="Comments" name="Comments"></textarea>
+                            <span id="spnComments" class="text-danger" style="display:none;">Comments is required.</span>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary" id="" onclick="return PatientCommunicationCommentsValidate();">Submit</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+<script>
+    var lstGraphViewModel = @Html.Raw(Json.Serialize(Model.lstGraphViewModel));
+</script>
+<script src="~/lib/microsoft/signalr/dist/browser/signalr.min.js"></script>
+<script src="~/lib/microsoft/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/ClientNotification.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        GetSpecialist();
+        setInterval(function () {
+            GetGraphData(function (resData) {
+                lstGraphViewModel = resData;
+                renderHeartRateChart();
+                renderBPChart();
+                renderOxygenSaturationSpo2Chart();
+                renderRrRespiratoryRateChart();
+                renderTemperatureChart();
+                BindPatientHealthCard(resData);
+            })
+        }, 600);
+        renderHeartRateChart();
+        renderBPChart();
+        renderOxygenSaturationSpo2Chart();
+        renderRrRespiratoryRateChart();
+        renderTemperatureChart();
+    })
+    function GetSpecialist()
+    {
+        $('#tblSpecialist').dataTable({
+            "ajax": {
+                "url": '@apiUrl/User/GetSpecialistStatusList',
+                "type": "GET"
+            },
+            autoWidth: false,
+            responsive: {
+
+            },
+            "columnDefs": [
+                { "width": "64%", "targets": 0 },
+                { "width": "40%", "targets": 1 },
+                { "width": "3%", "targets": 2 },
+                { "width": "3%", "targets": 3 },
+                
+            ],
+            columns: [
+                { data: 'firstName'},
+                { data: 'mobileNumber' },
+                {
+                    data: 'userId',
+                    render: function (data, type, row, meta) {
+
+                        return `<a class="btn btn-primary btn-sm" style="color:#fff" onclick="CallSpecialist(${data})" href="javascript:void(0);" title="Video Call"><i class="fa fa-phone" style="font-size:25px"></i></a>`;
+                    }
+                },
+                {
+                    data: 'statusName',
+                    render: function (data, type, row, meta) {
+                        if (data == 1) {
+                            return `<a class="btn btn-primary btn-sm" style="color:#fff" title="Available"><i class="fa fa-circle" style="font-size:25px;color:green"></i></a>`;
+                        }
+                        else
+                            {
+                                return `<a class="btn btn-primary btn-sm" style="color:#fff" title="Not Available"><i class="fa fa-circle" style="font-size:25px;color:yellow"></i></a>`;
+                            }
+                    }
+                    
+                }
+            ]
+        });
+    }
+
+    function GetGraphData(callback) {
+        var url = "@apiUrl" + "/DashBoard/GetGraphValues/";
+        $.ajax({
+            url: url,
+            data: { id: $("#hdnPatientId").val() },
+            cache: false,
+            type: "GET",
+            //beforeSend: function () {
+            //    $("#progressModal").attr("style", "display:block;background:rgb(0 0 0 / 38%);");
+            //},
+            success: function (response) {
+                callback(response);
+            },
+            error: function (error) {
+            }
+            ,
+            complete: function () {
+                //$("#progressModal").hide()
+            }
+        });
+    }
+    function renderHeartRateChart() {
+        let _dataPoints = [];
+        $(lstGraphViewModel).each(function (i, obj) {
+            let objDataPoint = {
+                // x: moment(obj.date).format('hh:mm:ss.SSS'),
+                y: obj.heartRate
+            }
+            _dataPoints.push(objDataPoint);
+        });
+        var chart = new CanvasJS.Chart("heartRateChartContainer",
+            {
+                animationEnabled: false,
+                axisX: {
+                    // lineThickness: 0,
+                    tickThickness: 0
+                },
+                axisY: {
+                    // lineThickness: 0,
+                    gridThickness: 0,
+                    // tickLength: 0
+                },
+                data: [
+                    {
+                        type: "spline",
+                        markerType: "none",
+                        // markerColor: "#f44336",
+                        lineColor: "#f44336",
+                        dataPoints: _dataPoints
+                    }
+                ]
+            });
+
+        chart.render();
+    }
+    function renderBPChart() {
+        let _dataPoints = [];
+        $(lstGraphViewModel).each(function (i, obj) {
+            let objDataPoint = {
+                // x: moment(obj.date).format('hh:mm:ss.SSS'),
+                y: (obj.bloodPressureSys / obj.bloodPressureDia)
+            }
+            _dataPoints.push(objDataPoint);
+        });
+        var chart = new CanvasJS.Chart("bpChartContainer",
+            {
+                animationEnabled: false,
+                axisX: {
+                    // lineThickness: 0,
+                    tickThickness: 0
+                },
+                axisY: {
+                    // lineThickness: 0,
+                    gridThickness: 0,
+                    // tickLength: 0
+                },
+                data: [
+                    {
+                        type: "spline",
+                        markerType: "none",
+                        // markerColor: "#ff9300",
+                        lineColor: "#ff9300",
+                        dataPoints: _dataPoints
+                    }
+                ]
+            });
+
+        chart.render();
+    }
+    function renderOxygenSaturationSpo2Chart() {
+        let _dataPoints = [];
+        $(lstGraphViewModel).each(function (i, obj) {
+            let objDataPoint = {
+                // x: moment(obj.date).format('hh:mm:ss.SSS'),
+                y: obj.oxygenSaturationSpo2
+            }
+            _dataPoints.push(objDataPoint);
+        });
+        var chart = new CanvasJS.Chart("oxygenSaturationSpo2ChartContainer",
+            {
+                animationEnabled: false,
+                axisX: {
+                    // lineThickness: 0,
+                    tickThickness: 0
+                },
+                axisY: {
+                    // lineThickness: 0,
+                    gridThickness: 0,
+                    // tickLength: 0
+                },
+                data: [
+                    {
+                        type: "spline",
+                        markerType: "none",
+                        // markerColor: "#7afc06",
+                        lineColor: "#7afc06",
+                        dataPoints: _dataPoints
+                    }
+                ]
+            });
+
+        chart.render();
+    }
+    function renderRrRespiratoryRateChart() {
+        let _dataPoints = [];
+        $(lstGraphViewModel).each(function (i, obj) {
+            let objDataPoint = {
+                // x: moment(obj.date).format('hh:mm:ss.SSS'),
+                y: obj.rrRespiratoryRate
+            }
+            _dataPoints.push(objDataPoint);
+        });
+        var chart = new CanvasJS.Chart("rRRespiratoryRateChartContainer",
+            {
+                animationEnabled: false,
+                axisX: {
+                    // lineThickness: 0,
+                    tickThickness: 0
+                },
+                axisY: {
+                    // lineThickness: 0,
+                    gridThickness: 0,
+                    // tickLength: 0
+                },
+                data: [
+                    {
+                        type: "spline",
+                        markerType: "none",
+                        // markerColor: "#00b1fa",
+                        lineColor: "#00b1fa",
+                        dataPoints: _dataPoints
+                    }
+                ]
+            });
+
+        chart.render();
+    }
+    function renderTemperatureChart() {
+        let _dataPoints = [];
+        $(lstGraphViewModel).each(function (i, obj) {
+            let objDataPoint = {
+                // x: moment(obj.date).format('hh:mm:ss.SSS'),
+                y: obj.temperature
+            }
+            _dataPoints.push(objDataPoint);
+        });
+        var chart = new CanvasJS.Chart("temperatureChartContainer",
+            {
+                animationEnabled: false,
+                axisX: {
+                    // lineThickness: 0,
+                    tickThickness: 0
+                },
+                axisY: {
+                    // lineThickness: 0,
+                    gridThickness: 0,
+                    // tickLength: 0
+                },
+                data: [
+                    {
+                        type: "spline",
+                        markerType: "none",
+                        // markerColor: "#e7004f",
+                        lineColor: "#e7004f",
+                        dataPoints: _dataPoints
+                    }
+                ]
+            });
+
+        chart.render();
+    }
+
+    function BindPatientHealthCard(resData) {
+        $('#lblHeartRateValue').text($(resData).last()[0].heartRate);
+        $('#lblBloodPressureValue').text(Math.trunc($(resData).last()[0].bloodPressureSys).toString() + "/" + Math.trunc($(resData).last()[0].bloodPressureDia).toString());
+        $('#lblOxygenValue').text($(resData).last()[0].oxygenSaturationSpo2);
+        $('#lblRespirationValue').text($(resData).last()[0].rrRespiratoryRate);
+        $('#lblTempratureValue').text($(resData).last()[0].temperature);
+    }
+</script>
+
+<script>
+    $(document).ready(function () {
+        $("#btncall").click(function () {
+            // if (patientDetailId != "" && patientDetailId != 0) {
+            //     var patientDetailId = $('#hdnId').val();
+            //     // var call = {};
+            //     // call.id = $("#hdnId").val();
+            //     // call.token = "abc"; // $("#hdnauthToken").val();
+            //     //window.location.href = '@Url.Action("Details", "DashBoard", new { id = 1 })';
+            //     window.location.href = '@Url.Action("PatientCallAndDetail", "DashBoard") + ' ? id = ' + patientDetailId';// + '&Param2=' + param2Value + '&Param3=' + param3VAlue + '&Param4=' + param4VAlue;
+            // }
+            var url = "@apiUrl";
+            url = "https://comm.nexper.app/participant";
+            $.ajax({
+                url: url,
+                data: {
+                    "email": $("#hdnLoggedInUserName").val().substring(3) + "r@outlook.com",
+                    "name": $("#hdnLoggedInUserName").val(),
+                    "handle": $("#hdnLoggedInUserName").val().substring(3),
+                    "role": ""
+                },
+                cache: false,
+                type: "POST",
+                beforeSend: function () {
+                    //  $(".loader").show();
+                },
+                success: function (response) {
+                    if (response.success) {
+                        var token = response.data.token;
+                        var urlReact = "@apiReactUrl" + token;
+                        $('#iFrameDiv').show();
+                        $('#videoCallIframe').attr('src', urlReact);
+
+                        $.ajax({
+                            type: 'POST',
+                            url: '/DashBoard/VideoCall',
+                            data: { PatientId: $("#hdnPatientId").val(), BedNo: $("#hdnBedNo").val() },
+                            success: function (result) {
+                                //alert(result);
+                            }
+                        });
+
+
+                    }
+                    else {
+                        // swal("Error", response.responseText, "error");
+                    }
+
+                },
+                complete: function () {
+                    // $(".loader").hide();
+                },
+                error: function () {
+                    // $(".loader").hide();
+                }
+            });
+        });
+
+
+        
+    });
+
+    function CallSpecialist(data) {
+        var url = "@apiUrl";
+        url = "https://comm.nexper.app/participant";
+        $.ajax({
+            url: url,
+            data: {
+                "email": $("#hdnLoggedInUserName").val().substring(3) + "r@outlook.com",
+                "name": $("#hdnLoggedInUserName").val(),
+                "handle": $("#hdnLoggedInUserName").val().substring(3),
+                "role": ""
+            },
+            cache: false,
+            type: "POST",
+            beforeSend: function () {
+                //  $(".loader").show();
+            },
+            success: function (response) {
+                if (response.success) {
+                    var token = response.data.token;
+                    var urlReact = "@apiReactUrl" + token;
+                    $('#CheckSpecialistDiv').hide();
+                    $('#iFrameDiv').show();
+                    $('#videoCallIframe').attr('src', urlReact);
+
+                    $.ajax({
+                        type: 'POST',
+                        url: '/DashBoard/VideoCall',
+                        data: { UserId: data, PatientId: $("#hdnPatientId").val(), BedNo: $("#hdnBedNo").val() },
+                        success: function (result) {
+                            //alert(result);
+                        }
+                    });
+
+
+                }
+                else {
+                    // swal("Error", response.responseText, "error");
+                }
+
+            },
+            complete: function () {
+                // $(".loader").hide();
+            },
+            error: function () {
+                // $(".loader").hide();
+            }
+        });
+    }
+</script>
+<script>
+    function formatDate(date) {
+        var d = new Date(date),
+            month = '' + (d.getMonth() + 1),
+            day = '' + d.getDate(),
+            year = d.getFullYear();
+
+        if (month.length < 2)
+            month = '0' + month;
+        if (day.length < 2)
+            day = '0' + day;
+
+        return [day, month, year].join('-');
+    }
+
+    function formatTime(date) {
+        var hours = new Date(date).getHours() > 9 ? new Date(date).getHours() : '0' + new Date(date).getHours()
+        var minutes = new Date(date).getMinutes() > 9 ? new Date(date).getMinutes() : '0' + new Date(date).getMinutes()
+        var ampm = "AM";
+        if (hours > 12) {
+            hours -= 12;
+            ampm = "PM";
+        }
+        return hours + ':' + minutes + ' ' + ampm
+    }
+
+    var data = [];
+    function PatientCommunicationDetalisModal(PatientId) {
+
+        $("#PatientId").val(PatientId);
+        $("#txtComments").val("");
+        $("#spnComments").attr("style", "display:none;");
+        var url = "@apiUrl";
+        url += "/Dashboard/GetPatientCommunicationComments/";
+        $.ajax({
+            type: "POST",
+            url: url,
+            datatype: 'json',
+            data: ({ Id: PatientId }),
+            success: function (result) {
+                $("#tbl_gridList").html(null);
+                $('#modalPatientCommunicationComment').css('display', 'block');
+                $('#modalPatientCommunicationComment').modal('show');
+                $('#spnPatientCommunicationCommentsDetails').text("Comments");
+
+                var hTable = "<table class='table table-hover mb-0' style='font-size: 12px;'>";
+                for (var i = 0; i < result.length; i++) {
+                    if (result[i].currentUser) {
+                        hTable += "<div class='commentDetails currentUser'>";
+                    }
+                    else {
+                        hTable += "<div class='commentDetails'>";
+                    }
+                    hTable += "<label class='comments'>" + result[i].comment + "</label>";
+                    hTable += "<span class='date-comment'>" + formatDate(result[i].createdOn) + " <br />" + formatTime(result[i].createdOn) + "</span>";
+
+                    hTable += "<label class='userName-comment'>" + result[i].createdByName + "</label>";
+                    hTable += "</div></br>";
+                    $("#tbl_gridList").html(hTable);
+                }
+            },
+        });
+    }
+
+
+    function PatientCommunicationCommentsValidate() {
+        var result = true;
+        if ($("#txtComments").val() == "") {
+            $("#txtComments").focus();
+            $("#spnComments").attr("style", "display:inline-block;");
+            result = false;
+        }
+        else {
+            $("#spnComments").attr("style", "display:none;");
+        }
+        return result;
+    }
+
+</script>

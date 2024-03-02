@@ -1,0 +1,171 @@
+﻿@model eSanjeevaniIcu.Portal.Models.NurseViewModel
+@using Microsoft.Extensions.Options;
+@using eSanjeevaniIcu.Portal.Controllers;
+@using eSanjeevaniIcu.Portal;
+
+@inject IOptions<ApplicationConfigurations> OptionsApplicationConfiguration
+@{
+    string apiUrl = @OptionsApplicationConfiguration.Value.ApplicationHostUrl;
+    ViewData["Title"] = "Nurses";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
+<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap4.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.14.1/moment.min.js"></script>
+<link href="~/css/sweet-alert.css" rel="stylesheet" />
+<script src="~/js/sweet-alert.js"></script>
+<script>
+    $(document).ready(function () {
+        if ('@TempData["SubmitResult"]' == '@Common.MsgSaveSuccess') {
+            swal("Success", '@OptionsApplicationConfiguration.Value.MsgSaveSuccess', "success");
+        }
+        else if ('@TempData["SubmitResult"]' == '@Common.MsgUpdateSuccess') {
+            swal("Success", '@OptionsApplicationConfiguration.Value.MsgUpdateSuccess', "success");
+        }
+        else if ('@TempData["SubmitResult"]' == '@Common.MsgDeleteSuccess') {
+            swal("Success", '@OptionsApplicationConfiguration.Value.MsgDeleteSuccess', "success");
+        }
+    });
+
+</script>
+<style>
+
+    .loader {
+        height: 30px;
+        aspect-ratio: 6;
+        --c: #0000 64%,#000 66% 98%,#0000 101%;
+        background: radial-gradient(35% 146% at 50% 159%,var(--c)) 0 0, radial-gradient(35% 146% at 50% -59%,var(--c)) 25% 100%;
+        background-size: calc(100%/3) 50%;
+        background-repeat: repeat-x;
+        clip-path: inset(0 100% 0 0);
+        animation: l2 1s infinite linear;
+    }
+</style>
+<div id="loader" class="loader"></div>
+<div class="PageBorder">
+    <div class="row">
+        <div class="col-md-12 col-sm-12">
+            <div class="table color-table PageTitle">
+                <div class="row">
+                    <div class="col-md-8">
+                        Nurse
+                    </div>
+                    <div class="col-md-4" style="text-align:right">
+                        <a class="btn btn-primary" href="@apiUrl/UserDetail/Create?refPage=Nurse" title="Create New"><i class="fa-solid fa-plus"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="" style="padding:10px;">
+        <table id="tblNurse" class="table-hover table-striped row-border table-sm" style="width:100%;">
+            <thead>
+                <tr>
+                    <th> Sr. No. </th>
+                    <th> Nurse Name </th>
+                    <th> Spoke Hospital Name </th>
+                    <th> Registration No. </th>
+                    <th> Contact No. </th>
+                    <th> District </th>
+                    <th> Created On </th>
+                    <th> Status </th>
+                    <th> Actions </th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <div class="row" style="padding:10px;"></div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#tblNurse').dataTable({
+            "ajax": {
+                "url": '@apiUrl/Nurse/GetNurseList',
+                "type": "GET"
+            },
+            autoWidth: false,
+            responsive: {
+
+            },
+            "columnDefs": [
+                { "width": "7%", "targets": 0 },
+                { "width": "15%", "targets": 1 },
+                { "width": "12%", "targets": 2 },
+                { "width": "12%", "targets": 3 },
+                { "width": "10%", "targets": 4 },
+                { "width": "10%", "targets": 5 },
+                { "width": "10%", "targets": 6 },
+                { "width": "5%", "targets": 7 },
+                { "width": "10%", "targets": 8 }
+            ],
+            columns: [
+                {
+                    data: 'nurseId',
+                    render: function (data, type, row, meta) {
+                        return meta.row + 1;
+                    }
+                },
+
+                { data: 'fullName' },
+                { data: 'spokeHospitalName' },
+                { data: 'registrationNumber' },
+                { data: 'contactNumber' },
+                { data: 'districtName' },
+                {
+                    data: 'createdOn',
+                    render: function (data, type, row, meta) {
+                        return moment(data).format('DD-MMM-YYYY');
+                    }
+                },
+                {
+                    data: 'status',
+                    render: function (data, type, row, meta) {
+                        let checked = data == true ? 'checked' : '';
+                        return `<div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" ${checked} id="statusswitch" disabled><label class="custom-control-label" for="statusswitch"></label></div>`;
+                    }
+                },
+                {
+                    data: 'nurseId',
+                    render: function (data, type, row, meta) {
+
+                        //return `<a class="btn btn-primary btn-sm" style="color:#fff" href="@apiUrl/Nurse/Edit/${data}" title="Edit"><i class="fa-solid fa-edit"></i></a> <a class="btn btn-primary btn-sm" style="color:#fff" href="@apiUrl/Nurse/Details/${data}" title="Details"><i class="fa-solid fa-eye"></i></a> <a class="btn btn-primary btn-sm" style="color:#fff" href="@apiUrl/Nurse/Delete/${data}" title="Delete"><i class="fa-solid fa-trash"></i></a> `;
+                        return `<a class="btn btn-primary btn-sm" style="color:#fff" href="@apiUrl/UserDetail/Edit?id=${data}&refPage=Nurse" title="Edit"><i class="fa-solid fa-edit"></i></a> <a class="btn btn-primary btn-sm" style="color:#fff" href="@apiUrl/Nurse/Details/${data}" title="Details"><i class="fa-solid fa-eye"></i></a> <a class="btn btn-primary btn-sm" style="color:#fff" onclick="DeleteRecord(${data})" id='btnDelete' title="Delete"><i class="fa-solid fa-trash"></i></a> `;
+                    }
+                }
+            ]
+        });
+    });
+
+    var loader = document.getElementById("loader");
+    window.addEventListener("load", function () {
+        loader.style.display = "none";
+    })
+
+    function DeleteRecord(id) {
+        swal({
+            title: "Are you sure?",
+            text: "Delete this Nurse.",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, I am sure!',
+            dangerMode: true
+        },
+            function (isConfirm) {
+                if (isConfirm) {
+                    $.ajax({
+                        type: 'Post',
+                        url: "@apiUrl/Nurse/Delete",
+                        data: { 'id': id },
+                        success: function (data) {
+                            swal("Success", "Record Deleted Successfully.", "success")
+                            window.location.reload();
+                        }
+                    });
+                }
+            })
+    }
+</script>

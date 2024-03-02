@@ -1,0 +1,288 @@
+﻿@model eSanjeevaniIcu.Portal.Models.GroupPermissionViewModel
+
+@{
+    ViewData["Title"] = "Group Permission";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/assets/Multiselect/bootstrap.min.css" rel="stylesheet" />
+<link href="~/assets/Multiselect/bootstrap-multiselect.css" rel="stylesheet" />
+<script src="~/assets/Multiselect/jquery.min.js"></script>
+<script src="~/assets/Multiselect/bootstrap.min.js"></script>
+<script src="~/assets/Multiselect/bootstrap-multiselect.js"></script>
+<style>
+    .btn-group .show {
+        background-color: lavender !important;
+        height: 200px;
+    }
+
+    .dispText {
+        pointer-events: none;
+        border: none;
+        width: 340px;
+    }
+
+    .separator {
+        width: 10px;
+    }
+</style>
+<style>
+    /* The container */
+    .container {
+        display: block;
+        position: relative;
+        padding-left: 35px;
+        margin-bottom: 12px;
+        cursor: pointer;
+        font-size: 16px;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+
+        /* Hide the browser's default checkbox */
+        .container input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+
+    /* Create a custom checkbox */
+    .checkmark {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 20px;
+        width: 20px;
+        /*background-color: #eee;*/
+        /*background-color: #da0019;*/
+        border-radius: 5px;
+        border: solid 1px #da0019;
+    }
+
+    /* On mouse-over, add a grey background color */
+    .container:hover input ~ .checkmark {
+        background-color: #ccc;
+    }
+
+    /* When the checkbox is checked, add a blue background */
+    .container input:checked ~ .checkmark {
+        /*background-color: #2196F3;*/
+        background-color: green;
+        border-radius: 5px;
+        border: solid 1px green;
+    }
+
+    /* Create the checkmark/indicator (hidden when not checked) */
+    .checkmark:after {
+        content: "";
+        position: absolute;
+        display: none;
+    }
+
+    /* Show the checkmark when checked */
+    .container input:checked ~ .checkmark:after {
+        display: block;
+    }
+
+    /* Style the checkmark/indicator */
+    .container .checkmark:after {
+        left: 9px;
+        top: 5px;
+        width: 5px;
+        height: 10px;
+        border: solid white;
+        border-width: 0 3px 3px 0;
+        -webkit-transform: rotate(45deg);
+        -ms-transform: rotate(45deg);
+        transform: rotate(45deg);
+    }
+
+    .spacer {
+        padding-left: 30px;
+    }
+</style>
+<script>
+    function ToggleButton(n) {
+        var a = n.firstChild.className;
+        $(".btn-link").find(".fa").each(function () {
+            if (this.className == "fa fa-minus") {
+                this.className = "fa fa-plus";
+            }
+        });        
+        if (a == "fa fa-plus") {
+            n.firstChild.className = "fa fa-minus";
+        }
+        else {            
+            n.firstChild.className = "fa fa-plus";
+        }
+    }
+    function updateSelectedMenus(arg) {
+        var selMenus = ""
+        $('input[type=checkbox]').each(function () {
+            if (this.checked) {
+                //var currentRow = $(this).closest("div").parent;
+                //var menuId = currentRow.find("div:eq(3)").text();
+                var menuId = $(this).closest("div").parent(0).find("div")[2].innerText;
+                selMenus = selMenus + menuId + ",";
+            }
+        });
+        $('#hfMenuIds').val(selMenus.substring(0, selMenus.length - 1));
+    }
+</script>
+<style>
+    .bs-example {
+        margin: 20px;
+    }
+
+    .accordion .fa {
+        margin-right: 0.5rem;
+    }
+</style>
+<div class="PageBorder">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table color-table PageTitle">
+                Edit Group Permission
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-8">
+            <form asp-action="Edit">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="GroupPermissionId" />
+                <input type="hidden" asp-for="GroupId" />
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-2">
+                            Group
+                        </div>
+                        <div class="separator">
+                            <b> :</b>
+                        </div>
+                        <div class="col-md-9">
+                            <b><input type="text" asp-for="GroupName" class="dispText" /></b>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <input type="hidden" asp-for="MenuIds" id="hfMenuIds" />
+                    <div class="row">
+                        <div class="col-md-2">
+                            Permissions
+                        </div>
+                        <div class="separator">
+                            <b> :</b>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="tree">
+                                <ul id="sidebarnav" style="list-style-type:none;">
+                                    @{foreach (var item in Model.lstMenusWithPermissionEntity.Where(s => s.ParentMenuId == null).GroupBy(Obj => new { Obj.MenuId }).Distinct().ToList())
+                                        {
+                                            <li>
+                                                <a href="javascript:void(0)" aria-expanded="false" title="@item.FirstOrDefault().Title">
+                                                    <div class="form-group">
+                                                        <div class="row">
+                                                            <div style="width:35px;">
+                                                                <label class="container">
+                                                                    @Html.CheckBoxFor(modelItem => @item.FirstOrDefault().Status, new { @class = "tree-checkbox parent", id = @item.FirstOrDefault().MenuId })
+                                                                    <span class="checkmark"></span>
+                                                                </label>
+                                                            </div>
+                                                            <div>
+                                                                @if (@item.FirstOrDefault().HasSubMenu == true)
+                                                                {
+                                                                    <button type="button" class="btn-link collapsed" data-toggle="collapse" onclick="ToggleButton(this)"><i class="fa fa-plus" style="font-size:12px;"></i></button>
+                                                                }
+                                                                <span class="hide-menu" style="font-size:12px;">@item.FirstOrDefault().Description</span>
+                                                            </div>
+                                                            <div style="display:none;">
+                                                                <span class="hide-menu">@item.FirstOrDefault().MenuId</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                                <ul aria-expanded="false" class="collapse" style="list-style-type:none;">
+                                                    @{foreach (var firstItem in (Model.lstMenusWithPermissionEntity.Where(s => s.ParentMenuId == item.FirstOrDefault().MenuId).ToList()))
+                                                        {
+                                                            <li style="padding-left:5px;">
+                                                                <a href="javascript:void(0)" aria-expanded="false">
+                                                                    <div class="form-group">
+                                                                        <div class="row">
+                                                                            <div style="width:35px;">
+                                                                                <label class="container">
+                                                                                    @Html.CheckBoxFor(modelItem => firstItem.Status, new { @class = "tree-checkbox parent", id = @firstItem.MenuId })
+                                                                                    <span class="checkmark"></span>
+                                                                                </label>
+                                                                            </div>
+                                                                            <div>
+                                                                                <span class="hide-menu" style="font-size:12px;">@firstItem.Description</span>
+                                                                            </div>
+                                                                            <div style="display:none;">
+                                                                                <span class="hide-menu">@firstItem.MenuId</span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </a>
+                                                                <ul style="list-style-type:none;">
+                                                                    @foreach (var secondItem in (Model.lstMenusWithPermissionEntity.Where(s => s.ParentMenuId == firstItem.MenuId).ToList()))
+                                                                    {
+                                                                        <li style="padding-left:5px;">
+                                                                            <a href="javascript:void(0)" aria-expanded="false">
+                                                                                <div class="form-group">
+                                                                                    <div class="row">
+                                                                                        <div style="width:35px;">
+                                                                                            <label class="container">
+                                                                                                @Html.CheckBoxFor(modelItem => @secondItem.Status, new { @class = "tree-checkbox node-item", id = @secondItem.MenuId })
+                                                                                                <span class="checkmark"></span>
+                                                                                            </label>
+                                                                                        </div>
+                                                                                        <div>
+                                                                                            <span class="hide-menu" style="font-size:12px;">@secondItem.Description</span>
+                                                                                        </div>
+                                                                                        <div style="display:none;">
+                                                                                            <span class="hide-menu">@secondItem.MenuId</span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </a>
+                                                                        </li>
+
+                                                                    }
+                                                                </ul>
+
+                                                            </li>
+
+                                                        }
+                                                    }
+                                                </ul>
+                                            </li>
+
+                                        }
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-12 text-left">
+                            <input type="submit" value="Save" class="btn btn-primary" onclick="updateSelectedMenus()" />
+                            <a asp-action="Index" class="btn btn-primary">Back to List</a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+    <div class="row" style="height:30px;">
+
+    </div>
+    <script src="~/assets/tree.js"></script>
+</div>
+

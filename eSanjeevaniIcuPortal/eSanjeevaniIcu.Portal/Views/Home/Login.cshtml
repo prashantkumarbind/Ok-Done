@@ -1,0 +1,119 @@
+﻿@model eSanjeevaniIcu.Portal.Models.AllUserViewModel
+@{
+    ViewBag.Title = "Log in";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0,minimal-ui">
+    <title>Login</title>
+    <meta content="Admin Dashboard" name="description">
+    <meta content="Mannatthemes" name="author">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="shortcut icon" href="assets/images/favicon.ico">
+    <link href="~/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="~/assets/css/icons.css" rel="stylesheet" type="text/css">
+    <link href="~/assets/css/style.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+    @using (Html.BeginForm("Login", "Home", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <script type="text/javascript" language="javascript">
+            function LoginUser() {
+                window.parent.location.href = "frmLoginControl.aspx?istimeout=true";
+            }
+        </script>
+        <!-- Begin page -->
+        <div class="loginbg"></div>
+        <div class="wrapper-page">
+            @*<div class="signup-txt">
+                Don't have an account? <a href="#"> Sign up</a>
+                </div>*@
+            <div class="card">
+                <div class="card-body">
+                    <div class="text-center">
+                        <div class="logo logo-admin">
+                            <img src="~/assets/images/logo.png" height="20" alt="logo"/>
+                        </div>
+                    </div>
+                    <div class="px-3 pb-3">
+                        <form class="form-horizontal m-t-20" action="">
+                            <div class="form-group row">
+                                <div class="col-12">
+                                    <input asp-for="UserName" class="form-control" type="text" required="" placeholder="Username">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-12">
+                                    <input asp-for="Password" class="form-control" type="password" required="" placeholder="Password">
+                                </div>
+                            </div>
+
+                            <div class="form-group forgot-password">
+                                @*<a href="">Forgot Password?</a>*@
+                            </div>
+
+                            <div class="form-group text-center row m-t-20">
+                                <div class="col-12">
+                                    <button class="btn btn-danger btn-block" type="submit" style="background-color: #ff9831;">Log In</button>
+                                </div>
+                            </div>
+                            <div class="form-group text-right row m-t-20">
+                                <div class="col-12">
+                                    <a href="http://www.isoftsoftware.com.au" target="_blank" style="font-size:10px;">Powered By: ISOFT</a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    }
+
+    <!-- jQuery  -->
+    <script src="~/assets/js/jquery.min.js"></script>
+    <script src="~/assets/js/bootstrap.min.js"></script>
+    <script src="~/assets/js/waves.js"></script>
+    <script src="~/assets/js/jquery.nicescroll.js"></script>
+    <!-- App js -->
+    <script src="~/assets/js/app.js"></script>
+    ///
+    <script src="~/lib/jQuery-2.1.4.min.js"></script>
+    <script src="~/js/sweet-alert.js"></script>
+    <link href="~/css/sweet-alert.css" rel="stylesheet" />
+    <script>
+        $(document).ready(function () {
+            if ('@ViewBag.LoginMessage' == 'NotAuthenticated') {
+                swal("Error", "Invalid User Name or Password", "error");
+                //alert('Invalid UserName or Password');
+            }
+            if ('@ViewBag.LoginMessage' == 'TroubleInLogin') {
+                swal("Error", "Invalid User Name or Password", "error");
+                //alert('Invalid UserName or Password');
+            }
+            @*if ('@ViewBag.Ret' == '3') {
+                var logdiv = document.getElementById("divlog");
+                var modal = document.getElementById('divpopup');
+                modal.style.display = "block";
+                logdiv.style.display = "none";
+                swal("@TW.Model.Resources.Tamwelk.Info", "@TW.Model.Resources.Tamwelk.EnterValidEmail", "info");
+            }
+            else if ('@ViewBag.Ret' == '4') {
+                var logdiv = document.getElementById("divlog");
+                var modal = document.getElementById('divpopup');
+                modal.style.display = "block";
+                logdiv.style.display = "none";
+                swal("@TW.Model.Resources.Tamwelk.Success", "@TW.Model.Resources.Tamwelk.ResetPasswordLink", "success");
+            }*@
+
+        });
+    </script>
+</body>
+</html>

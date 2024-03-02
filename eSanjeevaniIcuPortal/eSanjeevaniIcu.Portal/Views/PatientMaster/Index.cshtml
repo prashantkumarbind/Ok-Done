@@ -1,0 +1,166 @@
+﻿@model eSanjeevaniIcu.Portal.Models.PatientMasterViewModel
+@using Microsoft.Extensions.Options;
+@using eSanjeevaniIcu.Portal.Controllers;
+
+@inject IOptions<ApplicationConfigurations> OptionsApplicationConfiguration
+@{
+    string apiUrl = @OptionsApplicationConfiguration.Value.ApplicationHostUrl;
+    ViewData["Title"] = "Patient Master";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/css/sweet-alert.css" rel="stylesheet" />
+<script src="~/js/sweet-alert.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#txtSearchText").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $("#tblGroupMaster tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+    });
+
+
+    ////
+
+    function sortTable(n) {
+        var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+        table = document.getElementById("tblGroupMaster");
+        switching = true;
+        //Set the sorting direction to ascending:
+        dir = "asc";
+        /*Make a loop that will continue until
+        no switching has been done:*/
+        while (switching) {
+            //start by saying: no switching is done:
+            switching = false;
+            rows = table.rows;
+            /*Loop through all table rows (except the
+            first, which contains table headers):*/
+            for (i = 0; i < (rows.length - 1); i++) {
+                //start by saying there should be no switching:
+                shouldSwitch = false;
+                /*Get the two elements you want to compare,
+                one from current row and one from the next:*/
+                x = rows[i].getElementsByTagName("TD")[n];
+                y = rows[i + 1].getElementsByTagName("TD")[n];
+                /*check if the two rows should switch place,
+                based on the direction, asc or desc:*/
+                if (dir == "asc") {
+                    if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                        //if so, mark as a switch and break the loop:
+                        shouldSwitch = true;
+                        break;
+                    }
+                } else if (dir == "desc") {
+                    if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                        //if so, mark as a switch and break the loop:
+                        shouldSwitch = true;
+                        break;
+                    }
+                }
+            }
+            if (shouldSwitch) {
+                /*If a switch has been marked, make the switch
+                and mark that a switch has been done:*/
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                switching = true;
+                //Each time a switch is done, increase this count by 1:
+                switchcount++;
+            } else {
+                /*If no switching has been done AND the direction is "asc",
+                set the direction to "desc" and run the while loop again.*/
+                if (switchcount == 0 && dir == "asc") {
+                    dir = "desc";
+                    switching = true;
+                }
+            }
+        }
+    }
+</script>
+<style>
+    .searchInput {
+        width: 300px;
+        border: 1px solid #d1d1d1;
+        border-radius: 3px;
+        padding: 9px 10px 9px 35px;
+        margin-left: 10px;
+        background: url(@apiUrl/images/search-icon.png) no-repeat 10px center;
+        font-weight: 500 !important;
+    }
+</style>
+<div class="PageBorder">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table color-table PageTitle">
+                <div class="row">
+                    <div class="col-md-8">
+                        Patient Master
+                    </div>
+                    <div class="col-md-4" style="text-align:right">
+                        <a class="btn btn-primary" asp-action="Create">Create New</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 text-right" style="padding-right:20px;">
+            <input id="txtSearchText" type="text" class="searchInput" placeholder="Search...">
+        </div>
+    </div>
+    <div class="row" style="padding:10px;">
+        <table class="table color-table">
+            <thead>
+                <tr class="GridHeader">
+                    <th onclick="sortTable(0)">
+                        Patient Name
+                        <i class="mdi mdi-sort"></i>
+                    </th>
+                    <th onclick="sortTable(1)">
+                        City Name
+                        <i class="mdi mdi-sort"></i>
+                    </th>
+                    <th onclick="sortTable(2)">
+                        Bed No.
+                        <i class="mdi mdi-sort"></i>
+                    </th>
+                    <th onclick="sortTable(3)">
+                        Admission Date
+                        <i class="mdi mdi-sort"></i>
+                    </th>
+                    <th style="width:200px;"></th>
+                </tr>
+            </thead>
+            <tbody id="tblGroupMaster">
+                @if (Model.lstPatientMasterViewModel != null && Model.lstPatientMasterViewModel.Count > 0)
+                {
+                    @foreach (var item in Model.lstPatientMasterViewModel)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.PatientName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.City)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.BedNo)
+                            </td>
+                            <td>
+                                @item.AdmissionDate.ToString("dd-MM-yyyy")
+                            </td>
+                            <td>
+                                <a asp-action="Edit" asp-route-id="@item.PatientId" class="btn btn-primary">Edit</a>
+                                <a asp-action="Details" asp-route-id="@item.PatientId" class="btn btn-primary">Details</a>
+                                <a asp-action="Delete" asp-route-id="@item.PatientId" class="btn btn-primary">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="row" style="padding:10px;">
+    </div>
+</div>

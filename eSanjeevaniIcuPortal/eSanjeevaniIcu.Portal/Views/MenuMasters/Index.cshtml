@@ -1,0 +1,268 @@
+﻿@model eSanjeevaniIcu.Portal.Models.MenuMasterViewModel
+@using Microsoft.Extensions.Options;
+@using eSanjeevaniIcu.Portal.Controllers;
+
+@inject IOptions<ApplicationConfigurations> OptionsApplicationConfiguration
+@{
+    string apiUrl = @OptionsApplicationConfiguration.Value.ApplicationHostUrl;
+    ViewData["Title"] = "Menu Master";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script>
+    $(document).ready(function () {
+        $("#txtSearchText").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $("#tblMenuMaster tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+    });
+
+
+    ////
+
+    function sortTable(n) {
+        var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+        table = document.getElementById("tblMenuMaster");
+        switching = true;
+        //Set the sorting direction to ascending:
+        dir = "asc";
+        /*Make a loop that will continue until
+        no switching has been done:*/
+        while (switching) {
+            //start by saying: no switching is done:
+            switching = false;
+            rows = table.rows;
+            /*Loop through all table rows (except the
+            first, which contains table headers):*/
+            for (i = 0; i < (rows.length - 1); i++) {
+                //start by saying there should be no switching:
+                shouldSwitch = false;
+                /*Get the two elements you want to compare,
+                one from current row and one from the next:*/
+                x = rows[i].getElementsByTagName("TD")[n];
+                y = rows[i + 1].getElementsByTagName("TD")[n];
+                /*check if the two rows should switch place,
+                based on the direction, asc or desc:*/
+                if (dir == "asc") {
+                    if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                        //if so, mark as a switch and break the loop:
+                        shouldSwitch = true;
+                        break;
+                    }
+                } else if (dir == "desc") {
+                    if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                        //if so, mark as a switch and break the loop:
+                        shouldSwitch = true;
+                        break;
+                    }
+                }
+            }
+            if (shouldSwitch) {
+                /*If a switch has been marked, make the switch
+                and mark that a switch has been done:*/
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                switching = true;
+                //Each time a switch is done, increase this count by 1:
+                switchcount++;
+            } else {
+                /*If no switching has been done AND the direction is "asc",
+                set the direction to "desc" and run the while loop again.*/
+                if (switchcount == 0 && dir == "asc") {
+                    dir = "desc";
+                    switching = true;
+                }
+            }
+        }
+    }
+</script>
+<style>
+        .searchInput {
+            width: 300px;
+            border: 1px solid #d1d1d1;
+            border-radius: 3px;
+            padding: 9px 10px 9px 35px;
+            margin-left: 10px;
+            background: url(@apiUrl/images/search-icon.png) no-repeat 10px center;
+            font-weight: 500 !important;
+        }
+</style>
+<style>
+    /* The container */
+    .container {
+        display: block;
+        position: relative;
+        padding-left: 35px;
+        margin-bottom: 12px;
+        cursor: pointer;
+        font-size: 22px;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+
+        /* Hide the browser's default checkbox */
+        .container input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+
+    /* Create a custom checkbox */
+    .checkmark {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 25px;
+        width: 25px;
+        background-color: #eee;
+    }
+
+    /* On mouse-over, add a grey background color */
+    .container:hover input ~ .checkmark {
+        background-color: #ccc;
+    }
+
+    /* When the checkbox is checked, add a blue background */
+    .container input:checked ~ .checkmark {
+        /*background-color: #2196F3;*/
+        background-color: green;
+        border-radius: 5px;
+    }
+
+    /* Create the checkmark/indicator (hidden when not checked) */
+    .checkmark:after {
+        content: "";
+        position: absolute;
+        display: none;
+    }
+
+    /* Show the checkmark when checked */
+    .container input:checked ~ .checkmark:after {
+        display: block;
+    }
+
+    /* Style the checkmark/indicator */
+    .container .checkmark:after {
+        left: 9px;
+        top: 5px;
+        width: 5px;
+        height: 10px;
+        border: solid white;
+        border-width: 0 3px 3px 0;
+        -webkit-transform: rotate(45deg);
+        -ms-transform: rotate(45deg);
+        transform: rotate(45deg);
+    }
+</style>
+<div class="PageBorder">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table color-table PageTitle">
+                <div class="row">
+                    <div class="col-md-8">
+                        Menu Master
+                    </div>
+                    <div class="col-md-4" style="text-align:right">
+                        <a class="btn btn-primary" asp-action="Create">Create New</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 text-right" style="padding-right:20px;">
+            <input id="txtSearchText" type="text" class="searchInput" placeholder="Search...">
+        </div>
+    </div>
+    <div class="row" style="padding:10px;">
+        <table class="table color-table">
+            <thead>
+                <tr class="GridHeader">
+                    <th style="min-width:120px;" onclick="sortTable(0)">
+                        Menu Name
+                        <i class="mdi mdi-sort"></i>
+                    </th>
+                    <th style="min-width:120px;" onclick="sortTable(1)">
+                        @Html.DisplayNameFor(model => model.Description)
+                        <i class="mdi mdi-sort"></i>
+                    </th>
+                    <th style="min-width:100px;" onclick="sortTable(2)">
+                        @Html.DisplayNameFor(model => model.Sequence)
+                        <i class="mdi mdi-sort"></i>
+                    </th>
+                    <th style="min-width:120px;" onclick="sortTable(3)">
+                        @Html.DisplayNameFor(model => model.Title)
+                        <i class="mdi mdi-sort"></i>
+                    </th>
+                    <th style="min-width:100px;" onclick="sortTable(4)">
+                        @Html.DisplayNameFor(model => model.Icon)
+                        <i class="mdi mdi-sort"></i>
+                    </th>
+                    <th style="min-width:110px;" onclick="sortTable(5)">
+                        Parent Menu
+                        <i class="mdi mdi-sort"></i>
+                    </th>
+                    <th style="min-width:110px;" onclick="sortTable(6)">
+                        Display Data
+                        <i class="mdi mdi-sort"></i>
+                    </th>
+                    <th style="min-width:100px;">
+                        @Html.DisplayNameFor(model => model.Status)
+                    </th>
+                    <th style="min-width:205px;"></th>
+                </tr>
+            </thead>
+            <tbody id="tblMenuMaster">
+                @foreach (var item in Model.lstMenuMaster)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Description)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Sequence)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Title)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Icon)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ParentMenuName)
+                        </td>
+                        <td>
+                            @if (item.DataOfDays != null)
+                            {
+                                @Html.DisplayFor(modelItem => item.DataOfDays)<span> days</span>
+                            }
+                        </td>
+                        <td>
+                            <label class="container">
+                                @Html.CheckBoxFor(modelItem => item.Status, new { @onclick = "return false" })
+                                <span class="checkmark"></span>
+                            </label>
+                        </td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.MenuId" class="btn btn-primary" style="width:55px;">Edit</a>
+                            <a asp-action="Details" asp-route-id="@item.MenuId" class="btn btn-primary" style="width:55px;">Details</a>
+                            <a asp-action="Delete" asp-route-id="@item.MenuId" class="btn btn-primary" style="width:55px;">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="row" style="padding:10px;">
+
+    </div>
+</div>

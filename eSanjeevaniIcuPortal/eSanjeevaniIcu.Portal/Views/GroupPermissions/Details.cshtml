@@ -1,0 +1,57 @@
+﻿@model eSanjeevaniIcu.Portal.Models.GroupPermissionViewModel
+
+@{
+    ViewData["Title"] = "Group Permission";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="PageBorder">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table color-table PageTitle">
+                Group Details
+            </div>
+        </div>
+    </div>
+    <div class="table color-table">
+        <dl class="row">
+            <dt class="col-sm-2 padd5">
+                Group Name
+            </dt>
+            <dd class="col-sm-10 padd5">
+                :
+                @Html.DisplayFor(model => model.GroupName)
+            </dd>
+            <dt class="col-sm-2 padd5">
+                Permitted Menus
+            </dt>
+            <dd class="col-sm-10 padd5">
+                @if (@Model.MenuNames.Split(',').Length > 0)
+                {
+                    @for (int i = 0; i < @Model.MenuNames.Split(',').Length; i++)
+                    {
+                        <span>@i - @Model.MenuNames.Split(',')[i]</span><br />
+                    }
+                }
+
+            </dd>
+            <dt class="col-sm-2 padd5">
+                @Html.DisplayNameFor(model => model.Status)
+            </dt>
+            <dd class="col-sm-10 padd5">
+                :
+                @Html.DisplayFor(model => model.StatusName)
+            </dd>
+        </dl>
+        <div class="form-control" style="border:none;">
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <a asp-action="Edit" asp-route-id="@Model.GroupId" class="btn btn-primary">Edit</a>
+                    <a asp-action="Index" class="btn btn-primary">Back to List</a>
+                </div>
+            </div>
+        </div>
+        <div class="form-control" style="border:none;">
+        </div>
+    </div>
+</div>

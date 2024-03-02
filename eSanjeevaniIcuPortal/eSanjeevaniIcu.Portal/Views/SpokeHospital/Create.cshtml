@@ -1,0 +1,118 @@
+﻿@model eSanjeevaniIcu.Portal.Models.SpokeHospital.SpokeHospitalViewModel
+
+@{
+    ViewData["Title"] = "Spoke Hospital";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="PageBorder">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table color-table PageTitle">
+                Create Spoke Hospital
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="control-label">Spoke Hospital Name<span class="text-danger">*</span></label>
+                            <input asp-for="SpokeHospitalName" class="form-control" />
+                            <span asp-validation-for="SpokeHospitalName" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="control-label">COE Name<span class="text-danger">*</span></label>
+                            @Html.DropDownListFor(m => m.HubHospitalId, Model.lstHubHospital, "Select COE", new { @class = "form-control", @name = "ddlHubHospital", ID = "ddlHubHospital" })
+                            <span asp-validation-for="HubHospitalId" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="control-label">Contact No<span class="text-danger">*</span></label>
+                            <input type="text" asp-for="ContactNo" class="form-control" id="txtNumber" />
+                            <span asp-validation-for="ContactNo" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Email" class="control-label">Email<span class="text-danger">*</span></label>
+                            <input asp-for="Email" class="form-control" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="table color-table PageTitle">
+                            Address
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label asp-for="Address1" class="control-label">Address Line1<span class="text-danger">*</span></label>
+                            <input asp-for="Address1" class="form-control" />
+                            <span asp-validation-for="Address1" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Address2" class="control-label">Address Line2</label>
+                            <input asp-for="Address2" class="form-control" />
+                            <span asp-validation-for="Address2" class="text-danger"></span>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label>State<span class="text-danger">*</span></label>
+                            @Html.DropDownListFor(m => m.State, Model.lstStateMaster, "Select State", new { @class = "form-control", @name = "ddlState", ID = "ddlState" })
+                           @*  <span id="spnState" class="text-danger" style="display:none">State is required</span> *@
+                            <span asp-validation-for="State" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <label>District<span class="text-danger">*</span></label>
+                            @Html.DropDownListFor(m => m.District, Model.lstDistrictMaster, "Select District", new { @class = "form-control", @name = "ddlDistrict", ID = "ddlDistrict" })
+                            @* <span id="spnCity" class="text-danger" style="display:none">City is required</span> *@
+                            <span asp-validation-for="District" class="text-danger"></span>
+                        </div> 
+                        <div class="col-md-3">
+                            <label>City<span class="text-danger">*</span></label>
+                            @Html.DropDownListFor(m => m.City, Model.lstCityMaster, "Select City", new { @class = "form-control", @name = "ddlCity", ID = "ddlCity" })
+                            @* <span id="spnCity" class="text-danger" style="display:none">City is required</span> *@
+                            <span asp-validation-for="City" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-3">
+                            <label>Pin<span class="text-danger">*</span></label>
+                            <input asp-for="Pin" class="form-control" />
+                            <span asp-validation-for="Pin" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+               
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-12 text-center">
+                            <button type="submit" class="btn btn-primary">Create</button>
+                            <a asp-action="Index" class="btn btn-primary">Back to List</a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+}

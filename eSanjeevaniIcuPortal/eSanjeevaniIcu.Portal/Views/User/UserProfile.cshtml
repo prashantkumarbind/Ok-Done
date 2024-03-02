@@ -1,0 +1,177 @@
+﻿@model eSanjeevaniIcu.Portal.Models.UserViewModel
+@using Microsoft.Extensions.Options;
+@using eSanjeevaniIcu.Portal.Controllers;
+
+@inject IOptions<ApplicationConfigurations> OptionsApplicationConfiguration
+@{
+    string apiUrl = @OptionsApplicationConfiguration.Value.ApplicationHostUrl;
+    ViewData["Title"] = "Profile";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .avatar-upload {
+        position: relative;
+        max-width: 120px;
+        margin: 83px auto 0;
+    }
+
+        .avatar-upload .avatar-edit {
+            position: absolute;
+            right: -7px;
+            z-index: 1;
+            top: -67px;
+        }
+
+        .avatar-upload img {
+            width: 150px;
+            height: 150px;
+        }
+
+        .avatar-upload .avatar-edit input + label:after {
+            content: "\f040";
+            font-family: 'FontAwesome';
+            color: #757575;
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            right: 0;
+            text-align: center;
+            margin: auto;
+        }
+
+        .avatar-upload .avatar-edit input + label {
+            display: inline-block;
+            width: 34px;
+            height: 34px;
+            margin-bottom: 0;
+            border-radius: 100%;
+            background: #FFFFFF;
+            border: 1px solid transparent;
+            box-shadow: 0px 2px 4px 0px rgb(0 0 0 / 12%);
+            cursor: pointer;
+            font-weight: normal;
+            transition: all 0.2s ease-in-out;
+        }
+
+    #imageUpload {
+        display: none !important;
+    }
+
+    .user-name {
+        text-align: center;
+        margin-top: 10px;
+    }
+
+    .social-icons {
+        margin-top: 10px;
+        color: blue;
+    }
+
+    .custom-grey-background {
+        background-color: #f1f1f1;
+    }
+
+    .card {
+        height: 300px;
+    }
+
+</style>
+<div class="PageBorder">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table color-table PageTitle">
+                Profile
+            </div>
+        </div>
+    </div>
+    <div class="row m-3">
+        <!-- Profile Photo section -->
+        <div class="col-md-4">
+            <div class="card rounded custom-grey-background">
+                <div class="card-body text-center">
+                    <div class="avatar-upload">
+                        <div class="avatar-edit">
+                            <input type="file" id="imageUpload" name="imageUpload" accept=".png,.jpg,.jpeg" onchange="ShowImagePreview(this)">
+                            <input type="hidden" id="hdnImageData" @* asp-for="Image" *@>
+                            <input type="hidden" id="upImage" name="Image">
+                            <input type="hidden" id="slipname">
+                            <label for="imageUpload"></label>
+                        </div>
+                        <div>
+                            <img id="imagePreview" src="~/images/user.png" style="border-radius: 20%;margin-top: -70px; margin-left: -15px;" height="200px" width="200px;">
+                        </div>
+                        <div class="user-details mt-3">
+                            <p class="user-name">@Model.FirstName @Model.LastName</p>
+                            <div class="social-icons">
+                                <i class="fab fa-twitter"></i>
+                                <i class="fab fa-facebook"></i>
+                                <i class="fab fa-instagram"></i>
+                                <i class="fab fa-linkedin"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Profile Details section -->
+        <div class="col-md-8">
+            <div class="card rounded custom-grey-background profile-details-card">
+                <div class="card-body">
+
+                    <div class="table color-table profile-details-table">
+                        <h5>Profile Details</h5>
+                        <hr style="border-top: 2px solid #fff;">
+                    </div>
+                    <dl class="row mt-3">
+                        <dt class="col-sm-3">Name</dt>
+                        <dd class="col-sm-9">: @Model.FirstName  @Model.LastName</dd>
+
+                        <dt class="col-sm-3">Email</dt>
+                        <dd class="col-sm-9">: @Model.Email</dd>
+
+                        <dt class="col-sm-3">Phone Number</dt>
+                        <dd class="col-sm-9">: @Model.MobileNumber <i class="fas fa-edit" style="color: blue;"></i></dd>
+                        
+                        <dt class="col-sm-3">State</dt>
+                        <dd class="col-sm-9">: </dd>
+
+                        <dt class="col-sm-3">Address</dt>
+                        <dd class="col-sm-9">: </dd>
+                    </dl>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function ShowImagePreview(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('#imagePreview').prop('src', e.target.result);
+                $('#hdnImageData').val(e.target.result);
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+        else {
+            $('#hdnImageData').val();
+        }
+    }
+
+    function SetSignatureImage(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('#hdnSignatureData').val(e.target.result);
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+        else {
+            $('#hdnSignatureData').val();
+        }
+    }
+
+</script>

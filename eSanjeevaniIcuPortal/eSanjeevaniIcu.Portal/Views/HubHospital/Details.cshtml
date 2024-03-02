@@ -1,0 +1,93 @@
+﻿@model eSanjeevaniIcu.Portal.Models.HubHospitalViewModel
+
+@{
+    ViewData["Title"] = "Hub Hospital";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="PageBorder">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table color-table PageTitle">
+                Hub Hospital Details
+            </div>
+        </div>
+    </div>
+    <div class="table color-table">
+        <dl class="col-md-12">
+            <dt class="col-sm-2 padd5">
+                Hub Hospital Name
+            </dt>
+            <dd class="col-sm-10 padd5">
+                :
+                @Html.DisplayFor(model => model.HubHospitalName)
+            </dd>
+            <dt class="col-sm-2 padd5">
+                Contact No
+            </dt>
+            <dd class="col-sm-10 padd5">
+                :
+                @Html.DisplayFor(model => model.ContactNo)
+            </dd>
+            <dt class="col-sm-2 padd5">
+                Address
+            </dt>
+            <dd class="col-sm-10 padd5">
+                :
+                @Html.DisplayFor(model => model.Address)
+            </dd>
+            <dt class="col-sm-2 padd5">
+                City
+            </dt>
+            <dd class="col-sm-10 padd5">
+                :
+                @Html.DisplayFor(model => model.City)
+            </dd>
+            <dt class="col-sm-2 padd5">
+                State
+            </dt>
+            <dd class="col-sm-10 padd5">
+                :
+                @Html.DisplayFor(model => model.State)
+            </dd>
+            <dt class="col-sm-2 padd5">
+                Pin
+            </dt>
+            <dd class="col-sm-10 padd5">
+                :
+                @Html.DisplayFor(model => model.Pin)
+            </dd>
+            <dt class="col-sm-2 padd5">
+                Created On
+            </dt>
+            <dd class="col-sm-10 padd5">
+                :
+                @Model.CreatedOn.ToString("dd-MM-yyyy")
+            </dd>
+            <dt class="col-sm-2 padd5">
+                Created By
+            </dt>
+            <dd class="col-sm-10 padd5">
+                :
+                @Html.DisplayFor(model => model.CreatedByName)
+            </dd>
+            <dt class="col-sm-2 padd5">
+                Status
+            </dt>
+            <dd class="col-sm-10 padd5">
+                :
+                @Html.DisplayFor(model => model.StatusName)
+            </dd>
+        </dl>
+        <div class="form-control" style="border:none;">
+            <div class="row">
+                <div class="col-md-12 text-left">
+                    <a asp-action="Edit" asp-route-id="@Model.HubHospitalId" class="btn btn-primary">Edit</a>
+                    <a asp-action="Index" class="btn btn-primary">Back to List</a>
+                </div>
+            </div>
+        </div>
+        <div class="form-control" style="border:none;">
+        </div>
+    </div>
+</div>

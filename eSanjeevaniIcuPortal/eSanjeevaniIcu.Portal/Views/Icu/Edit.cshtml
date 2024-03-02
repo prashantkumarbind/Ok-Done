@@ -1,0 +1,106 @@
+﻿@model eSanjeevaniIcu.Portal.Models.IcuViewModel
+@using Microsoft.Extensions.Options;
+@using eSanjeevaniIcu.Portal.Controllers;
+
+@inject IOptions<ApplicationConfigurations> OptionsApplicationConfiguration
+@{
+    string apiUrl = @OptionsApplicationConfiguration.Value.ApplicationHostUrl;
+    ViewData["Title"] = "ICU";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="PageBorder">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table color-table PageTitle">
+                Edit
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 mt-3">
+            <form asp-action="Edit">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="IcuId" />
+                <div class="col-md-12">
+                    <div class="col-md-4 mb-3">
+                        <label>State Name </label>
+                        <input asp-for="@Model.StateName" type="text" class="form-control" id="txtIcuName" readonly>
+                        <input type="hidden" asp-for="StateId" />
+                        @* @Html.DropDownListFor(m => m.StateId, Model.lstStateMaster, "Select State", new { @class = "form-control", @name = "ddlStateMaster", ID = "ddlStateMaster" })
+                        <span id="spnState" class="text-danger" style="display:none">State is required</span> *@
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="validationCustom01">Spoke Name </label>
+                        <input asp-for="SpokeHospitalName" type="text" class="form-control" id="txtIcuName" readonly>
+                        <input type="hidden" asp-for="SpokeHospitalId" />
+                       @*  @Html.DropDownListFor(m => m.SpokeHospitalId, Model.lstSpokeHospital, "Select Spoke Hospital", new { @class = "form-control", @name = "ddlSpokeHospital", ID = "ddlSpokeHospital" })
+                        <span id="spnSpokeHospital" class="text-danger" style="display:none">Spoke Hospital is required</span> *@
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="validationCustom01">ICU Name <span class="text-danger">*</span></label>
+                        <input asp-for="IcuName" type="text" class="form-control" id="txtIcuName">
+                        <span id="spnIcuName" class="text-danger" style="display:none">ICU Name is required</span>
+                        <div class="valid-feedback">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="table color-table PageTitle">
+                            Bed Types
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                    <div class="col-md-4 mb-3">
+                        <label>Total Beds <span class="text-danger">*</span></label>
+                        <input asp-for="TotalBeds" type="text" class="form-control" id="txtTotalBeds" readonly>
+                        <span id="spnTotalBeds" class="text-danger" style="display:none">Required</span>
+                        <div class="valid-feedback">
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label>HDU Beds <span class="text-danger">*</span></label>
+                        <input asp-for="HduBeds" type="text" class="form-control" id="txtHduBeds" readonly>
+                        <span id="spnHduBeds" class="text-danger" style="display:none">Required</span>
+                        <div class="valid-feedback">
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label>ICU Beds <span class="text-danger">*</span></label>
+                        <input asp-for="IcuBeds" type="text" class="form-control" id="txtIcuBeds" readonly>
+                        <span id="spnIcuBeds" class="text-danger" style="display:none">Required</span>
+                        <div class="valid-feedback">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="col-md-4 mb-3">
+                        <label>Other </label>
+                        <input asp-for="Other" type="text" class="form-control" id="txtOther" placeholder="Bed Type" readonly>
+                        <div class="valid-feedback">
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label>Beds </label>
+                        <input asp-for="Beds" type="text" class="form-control" id="txtBeds" readonly>
+                        <div class="valid-feedback">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-5">
+                    <div class="col-md-12 text-center">
+                        <button type="submit" class="btn btn-primary">Update</button>
+                        <a asp-action="Index" class="btn btn-primary">Close</a>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>

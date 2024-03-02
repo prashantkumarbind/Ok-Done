@@ -1,0 +1,192 @@
+﻿@model eSanjeevaniIcu.Portal.Models.IcuViewModel
+@using Microsoft.Extensions.Options;
+@using eSanjeevaniIcu.Portal.Controllers;
+@using eSanjeevaniIcu.Portal;
+
+@inject IOptions<ApplicationConfigurations> OptionsApplicationConfiguration
+@{
+    string apiUrl = @OptionsApplicationConfiguration.Value.ApplicationHostUrl;
+    ViewData["Title"] = "ICU";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
+<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap4.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.14.1/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link href="~/css/sweet-alert.css" rel="stylesheet" />
+@* <script src="~/js/sweet-alert.js"></script> *@
+<script>
+    $(document).ready(function () {
+        if ('@TempData["SubmitResult"]' == '@Common.MsgSaveSuccess') {
+            swal("Success", '@OptionsApplicationConfiguration.Value.MsgSaveSuccess', "success");
+        }
+        else if ('@TempData["SubmitResult"]' == '@Common.MsgUpdateSuccess') {
+            swal("Success", '@OptionsApplicationConfiguration.Value.MsgUpdateSuccess', "success");
+        }
+        else if ('@TempData["SubmitResult"]' == '@Common.MsgDeleteSuccess') {
+            swal("Success", '@OptionsApplicationConfiguration.Value.MsgDeleteSuccess', "success");
+        }
+    });
+
+
+</script>
+<style>
+
+    .loader {
+        height: 30px;
+        aspect-ratio: 6;
+        --c: #0000 64%,#000 66% 98%,#0000 101%;
+        background: radial-gradient(35% 146% at 50% 159%,var(--c)) 0 0, radial-gradient(35% 146% at 50% -59%,var(--c)) 25% 100%;
+        background-size: calc(100%/3) 50%;
+        background-repeat: repeat-x;
+        clip-path: inset(0 100% 0 0);
+        animation: l2 1s infinite linear;
+    }
+
+    @@keyframes l2 {
+        90%, to {
+            clip-path: inset(0)
+        }
+    }
+</style>
+<div id="loader" class="loader"></div>
+<div class="PageBorder">
+    <div class="row">
+        <div class="col-md-12 col-sm-12">
+            <div class="table color-table PageTitle">
+                <div class="row">
+                    <div class="col-md-8">
+                        ICU
+                    </div>
+                    <div class="col-md-4" style="text-align:right">
+                        <a class="btn btn-primary" asp-action="Create" title="Create New"><i class="fa-solid fa-plus"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="" style="padding:10px;">
+        <table id="tblIcu" class="table-hover table-striped row-border table-sm" style="width:100%;">
+            <thead>
+                <tr>
+                    <th> Sr. No. </th>
+                    <th> Created Date </th>
+                    <th> State </th>
+                    <th> Spoke </th>
+                    <th> ICU </th>
+                    <th> ICU/HDU/Others <br/> (Bed Count) </th>
+                    <th> Actions </th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <div class="row" style="padding:10px;">
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#tblIcu').dataTable({
+            "ajax": {
+                "url": '@apiUrl/Icu/GetIcuList',
+                "type": "GET"
+            },
+            autoWidth: false,
+            responsive: {
+
+            },
+            "columnDefs": [
+                { "width": "7%", "targets": 0 },
+                { "width": "15%", "targets": 1 },
+                { "width": "15%", "targets": 2 },
+                { "width": "20%", "targets": 3 },
+                { "width": "15%", "targets": 4 },
+                { "width": "15%", "targets": 5 },
+                { "width": "13%", "targets": 6 },
+            ],
+
+            columns: [
+                {
+                    data: 'icuId',
+                    render: function (data, type, row, meta) {
+                        return meta.row + 1;
+                    }
+                },
+                {
+                    data: 'createdOn',
+                    render: function (data, type, row, meta) {
+                        return moment(data).format('DD-MMM-YYYY');
+                    }
+                },
+                { data: 'stateName' },
+                { data: 'spokeHospitalName' },
+                { data: 'icuName' },
+                // { data: 'totalBeds' },
+                {
+                    data: 'totalBeds',
+                    render: function (data, type, row, meta) {
+                        return `${row.icuBeds}/${row.hduBeds}/${(row.beds == null ? 0:row.beds)}`;
+                    }
+                },
+                {
+                    data: 'icuId',
+                    render: function (data, type, row, meta) {
+
+                        return `<a class="btn btn-primary btn-sm" style="color:#fff" href="@apiUrl/Icu/Edit/${data}" title="Edit"><i class="fa-solid fa-edit"></i></a> <a class="btn btn-primary btn-sm" style="color:#fff" href="@apiUrl/Icu/Details/${data}" title="Details"><i class="fa-solid fa-eye"></i></a> <a class="btn btn-primary btn-sm" style="color:#fff" onclick="Delete(${data})" title="Delete"><i class="fa-solid fa-trash"></i></a> `;
+                    }
+                }
+            ]
+        });
+    });
+
+
+    function Delete(id) {
+
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: "btn btn-success",
+                cancelButton: "btn btn-danger"
+            },
+            buttonsStyling: false
+        });
+        swalWithBootstrapButtons.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes, delete it!",
+            cancelButtonText: "No, cancel!",
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: 'Post',
+                    url: "@apiUrl/Icu/Delete",
+                    data: { 'id': id },
+                    success: function (data) {
+                        swalWithBootstrapButtons.fire({
+                            title: "Deleted!",
+                            text: "Your record has been deleted.",
+                            icon: "success"
+                        });
+                        window.location.reload();
+                        // $('#tblIcu').dataTable().ajax.reload();
+                    }
+                });
+
+            } else if (
+
+                result.dismiss === Swal.DismissReason.cancel
+            ) {
+
+            }
+        });
+    }
+
+    var loader = document.getElementById("loader");
+    window.addEventListener("load", function () {
+        loader.style.display = "none";
+    })
+
+</script>

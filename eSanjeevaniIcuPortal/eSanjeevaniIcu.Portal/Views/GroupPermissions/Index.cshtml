@@ -1,0 +1,62 @@
+﻿@model eSanjeevaniIcu.Portal.Models.GroupPermissionViewModel
+
+@{
+    ViewData["Title"] = "Group Permission";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="PageBorder">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table color-table PageTitle">
+                <div class="row">
+                    <div class="col-md-8">
+                        Group Permission
+                    </div>
+                    <div class="col-md-4" style="text-align:right">
+                        @*<a class="btn btn-primary" asp-action="Create">Create New</a>*@
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" style="padding:10px;">
+        <table class="table color-table">
+            <thead>
+                <tr class="GridHeader">
+                    <th style="min-width:120px;">
+                        Group Name
+                    </th>
+                    <th>
+                        Permitted Menus
+                    </th>
+                    <th style="width:80px;">
+                        Status
+                    </th>
+                    <th style="min-width:210px;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.lstGroupPermissions)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.GroupName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.MenuNames)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.StatusName)
+                        </td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.GroupId" class="btn btn-primary" >Edit</a>
+                            <a asp-action="Details" asp-route-id="@item.GroupId" class="btn btn-primary" >Details</a>
+                            @*<a asp-action="Delete" asp-route-id="@item.GroupId" class="btn btn-primary" >Delete</a>*@
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

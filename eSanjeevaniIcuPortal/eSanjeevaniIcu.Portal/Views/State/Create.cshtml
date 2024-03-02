@@ -1,0 +1,61 @@
+﻿@using eSanjeevaniIcu.Portal
+@model eSanjeevaniIcu.Portal.Models.StateViewModel
+@{
+    ViewData["Title"] = "State";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/css/sweet-alert.css" rel="stylesheet" />
+@* <script src="~/js/sweet-alert.js"></script> *@
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    $(document).ready(function () {
+        if ('@TempData["StateExist"]' != "") {
+            swal.fire("Error", '@TempData["StateExist"]', "error");
+        }
+        
+    });
+
+
+</script>
+
+<div class="PageBorder">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table color-table PageTitle">
+                Add State
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-12 mt-4">
+                            @Html.DropDownListFor(m => m.StateId, Model.lstStateMasterMain, "Select State", new { @class = "form-control", @name = "ddlState", @onchange = "setStateName()", ID = "ddlStateId" })
+                            <input type="hidden" asp-for="StateName" id="hdnStateName" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-12 text-center">
+                            <button type="submit" class="btn btn-primary">Save</button>
+                            <a asp-action="Index" class="btn btn-primary">Cancel</a>
+
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function setStateName() {
+        $('#hdnStateName').val($('#ddlStateId option:selected').text());
+    }
+</script>

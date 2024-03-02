@@ -1,0 +1,49 @@
+﻿@model eSanjeevaniIcu.Portal.Models.GroupMasterViewModel
+
+@{
+    ViewData["Title"] = "Group Master";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="PageBorder">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table color-table PageTitle">
+                Edit Group
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <form asp-action="Edit">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="GroupId" />
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label asp-for="GroupName" class="control-label"></label>
+                            <input asp-for="GroupName" class="form-control" />
+                            <span asp-validation-for="GroupName" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-8">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-4 text-center">
+                            <input type="submit" value="Save" class="btn btn-primary" />
+                            <a asp-action="Index" class="btn btn-primary">Back to List</a>
+                        </div>
+                        <div class="col-md-8">
+
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+

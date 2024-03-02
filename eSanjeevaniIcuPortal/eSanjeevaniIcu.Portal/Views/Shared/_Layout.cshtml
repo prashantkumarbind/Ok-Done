@@ -1,0 +1,339 @@
+﻿
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - WebPortal</title>
+    @using Microsoft.AspNetCore.Http
+    @using eSanjeevaniIcu.Portal;
+    <environment include="Development">
+        <link href="~/css/bootstrap.css" rel="stylesheet" />
+        <script src="~/lib/jquery/dist/jquery.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+        <script src="~/js/site.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development">
+        
+        <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.3.1.min.js"
+                asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
+                asp-fallback-test="window.jQuery"
+                crossorigin="anonymous"
+                integrity="sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT">
+        </script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"
+                asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
+                asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"
+                crossorigin="anonymous"
+                integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd">
+        </script>
+        
+        
+    </environment>
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/css/style.css" />
+   @*  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script> *@
+    @* <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> *@
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+    <script src="~/js/jquery-3.4.1.js"></script>
+    <script src="~/js/sidebarmenu.js"></script>
+    <script src="~/js/bootstrap.js"></script>
+    <link rel="stylesheet" href="https://cdn.materialdesignicons.com/2.0.46/css/materialdesignicons.min.css">
+    <style>
+
+        .nav-btn {
+            margin-right: 30px;
+            margin-top: 10px;
+            padding-left: 10px;
+            cursor: pointer;
+        }
+
+            .nav-btn span {
+                display: block;
+                width: 22px;
+                height: 2px;
+                background: #b3aaaa;
+                margin: 4px 0;
+                border-radius: 15px;
+                -webkit-transition: all 0.3s ease 0s;
+                transition: all 0.3s ease 0s;
+                box-shadow: 0 0 0 4px rgba(99, 96, 96, 0.03);
+            }
+
+        .sbar_collapsed .nav-btn span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .sbar_collapsed .nav-btn span:first-child {
+            -webkit-transform: rotate(45deg)translate(5px, 5px);
+            transform: rotate(45deg)translate(5px, 5px);
+        }
+
+        .sbar_collapsed .nav-btn span:last-child {
+            -webkit-transform: rotate(-45deg)translate(3px, -3px);
+            transform: rotate(-45deg)translate(3px, -3px);
+        }
+
+
+        .sbar_collapsed.page-container {
+            padding-left: 0;
+        }
+
+        .sbar_collapsed .sidebar-menu {
+            left: -240px;
+        }
+
+        .sbar_collapsed .col-md-5 h4 {
+            margin-left: 100px;
+        }
+
+        .sbar_collapsed .nav-btn span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .main-content {
+            width: 100%;
+            height: 100%;
+            min-height: 100vh;
+            padding-left: 240px;
+            -webkit-transition: padding-left 0.3s ease 0s;
+            transition: padding-left 0.3s ease 0s;
+        }
+
+        .sbar_collapsed.page-container {
+            padding-left: 0;
+        }
+
+        .pl0 {
+            padding-left: 0px;
+        }
+
+        .pl240 {
+            padding-left: 240px;
+        }
+
+        .sidebar-menu {
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 99;
+            height: 100vh;
+            width: 240px;
+            overflow: hidden;
+            background: #fff;
+            box-shadow: 2px 0 32px rgba(0, 0, 0, 0.05);
+            -webkit-transition: all 0.3s ease 0s;
+            transition: all 0.3s ease 0s;
+        }
+
+        .text-center {
+            text-align: center !important;
+        }
+
+        .header-area, .sidebar-header {
+            height: 80px !important
+        }
+    </style>
+</head>
+<body>
+
+
+    <div class="page-container">
+
+        <div class="sidebar-menu">
+            <div class="sidebar-header red-bg">
+                <div class="mssLogo">
+                    <a href="@Url.Action("Index", "Dashboard")">
+                        <img src="~/assets/images/logo.png" style="height: 60px;margin-left: 5px;margin-top: 9px;" />
+                    </a>
+                </div>
+            </div>
+            <div class="main-menu">
+                <div class="menu-inner">
+                    <nav class="sidebar-nav">
+                        @await Component.InvokeAsync("SideBarNav")
+
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="main-content">
+
+            <div class="header-area red-bg">
+                <div class="row align-items-center" style="height:80px;">
+                    <div class="col-md-2 col-sm-2 clearfix">
+                        <div class="nav-btn pull-left">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </div>
+                    <div class="col-md-7 col-sm-7 clearfix">
+                        <div class="row">
+                            <div class="col-md-12 col-sm-12">
+                                <h4 class="text-center" style="font-size:24px;">Welcome to eSanjeevani ICU</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-1 col-sm-1 text-center clearfix" style="display:flex">@*
+                        <div><a value="increaseFont" class="btn btn-primary increaseFont"><i class="fa fa-plus"></i></a></div> &nbsp;
+                        <div><a value="decreaseFont" class="btn btn-primary decreaseFont"><i class="fa fa-minus"></i></a></div>*@
+                    </div>
+                    @* <div class="col-md-2 col-sm-2 text-right clearfix">
+                        <div style="display:block !important">
+                            <span style="font-size:11px; margin-right:5px;">
+                                Hi @Context.Session.GetString(Common.LoggedInUserName) !
+                            </span>
+                            <br />
+                            <a href="@Url.Action("Logout", "Home")" aria-expanded="false">
+                                <span class="fa fa-times" style="color:white; font-size:15px;"></span>
+                                <span class="hide-menu" style="color:white;padding-right: 10px;font-weight: bold;">Logout</span>
+                            </a>
+                        </div>
+                    </div> *@
+                    <!-- user dropdown-->
+                    <div class="col-md-2 col-sm-2 text-right clearfix">
+                        <ul class="notification-area pull-right">
+                            <div class="user-profile pull-right">
+                                @*<img class="avatar user-thumb" src="~/assets/images/author/avatar.png" alt="avatar">*@
+                                <h4 class="user-name dropdown-toggle showHide" data-toggle="dropdown" style="cursor:pointer">  Hi @Context.Session.GetString(Common.LoggedInUserName) ! <i class="fa fa-angle-down"></i></h4>
+                                <div class="dropdown-menu" id="ulDiv">
+                                    @* <a class="dropdown-item" href="#"><i class="fa fa-envelope"></i> Message</a> *@
+                                    <a class="dropdown-item" href="@Url.Action("UserProfile", "User")"><i class="fa fa-user"></i> User Profile</a>
+                                    <a class="dropdown-item" href="@Url.Action("ChangePassword", "Home")"><i class="fa fa-key"></i> Change Password</a>
+                                    @* <a class="dropdown-item" href="@Url.Action("Index", "SettingMaster")"><i class="fa fa-gear"></i> Settings</a> *@
+                                    <a class="dropdown-item" href="@Url.Action("Logout", "Home")">
+                                        <i class="fa fa-sign-out"></i> Log Out
+                                    </a>
+                                </div>
+                            </div>
+                        </ul>
+                    </div>
+                    <!-- end of code user dropdown-->
+                </div>
+            </div>
+
+            <!-- main content-->
+            <div class="main-content-inner" id="mainContent">
+                @RenderBody()
+            </div>
+
+        </div>
+
+
+    </div>
+    <footer class="border-top footer text-muted red-bg">
+        <div class="container" style="font-family:Arial, Helvetica, sans-serif; font-size:10px; color:white; text-align:right; padding-right:170px;">
+            <a href="http://www.isoftsoftware.com.au" target="_blank" style="color:white;">Powered By ISOFT</a>
+        </div>
+    </footer>
+
+
+
+
+
+
+
+    @*
+    <div id="main-wrapper">
+    <header class="topbar red-bg" style="height:80px;">
+    <nav class="navbar top-navbar navbar-expand-md navbar-dark">
+    <div class="navbar-header">
+    <a class="navbar-brand" href="@Url.Action("Index", "DashBoard")">
+    <div class="mssLogo">
+    <img src="~/assets/images/logo.png" style="height: 60px;margin-left: -20px;margin-top: 9px;" />
+    </div>
+    </a>
+    </div>
+    <div class="navbar-collapse text-center" style="display:block !important">
+    <h3 style="width: 100%; ">Welcome to eSanjeevani ICU</h3>
+    </div>
+    <div style="display:block !important">
+    <span style="font-size:11px; margin-right:5px;">
+    Hi @Context.Session.GetString(Common.LoggedInUserName) !
+    </span>
+    <br />
+    <a href="@Url.Action("Logout", "Home")" aria-expanded="false">
+    <span class="fa fa-times" style="color:white; font-size:15px;"></span>
+    <span class="hide-menu" style="color:white;padding-right: 10px;font-weight: bold;">Logout</span>
+    </a>
+    </div>
+    </nav>
+    </header>
+    <aside class="left-sidebar" style="width:240px;">
+    <!-- Sidebar scroll-->
+    <div class="scroll-sidebar">
+    <!-- Sidebar navigation-->
+    <nav class="sidebar-nav">
+    @await Component.InvokeAsync("SideBarNav")
+
+    </nav>
+    <!-- End Sidebar navigation -->
+    </div>
+    <!-- End Sidebar scroll-->
+    </aside>
+
+    <footer class="border-top footer text-muted red-bg">
+    <div class="container" style="font-family:Arial, Helvetica, sans-serif; font-size:10px; color:white; text-align:right; padding-right:170px;">
+    <a href="http://www.isoftsoftware.com.au" target="_blank" style="color:white;">Powered By ISOFT</a>
+    </div>
+    </footer>
+    </div>
+    *@
+    <environment include="Development">
+        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"
+                asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"
+                asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"
+                crossorigin="anonymous"
+                integrity="sha384-xrRywqdh3PHs8keKZN+8zzc5TX0GRTLCcmivcbNJWm2rs5C8PRhcEn3czEjhAO9o">
+        </script>
+    </environment>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
+<script>
+    /*================================
+        sidebar collapsing
+        ==================================*/
+    $('.nav-btn').on('click', function () {
+        $('.page-container').toggleClass('sbar_collapsed');
+
+        $('.page-container').find('.main-content').removeClass('pl0');
+        $('.page-container').find('.main-content').removeClass('pl240');
+
+        if ($('.page-container').hasClass('sbar_collapsed')) {
+            $('.page-container').find('.main-content').addClass('pl0');
+        }
+        else {
+            $('.page-container').find('.main-content').addClass('pl240');
+        }
+    });
+
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".increaseFont,.decreaseFont").click(function () {
+            var type = $(this).val();
+            var curFontSize = $('.page-container').css('font-size');
+            if (type == 'increase') {
+                $('.page-container').css('font-size', parseInt(curFontSize) + 1);
+            }
+            else {
+                $('.page-container').css('font-size', parseInt(curFontSize) - 1);
+            }
+        });
+
+
+    });
+</script>
+<script src="~/lib/microsoft/signalr/dist/browser/signalr.min.js"></script>
+<script src="~/lib/microsoft/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/ClientNotification.js"></script>
+<link href="~/assets/css/popup.css" rel="stylesheet" />

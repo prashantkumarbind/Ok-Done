@@ -1,0 +1,218 @@
+﻿@model eSanjeevaniIcu.Portal.Models.NurseViewModel
+@using Microsoft.Extensions.Options;
+@using eSanjeevaniIcu.Portal.Controllers;
+
+@inject IOptions<ApplicationConfigurations> OptionsApplicationConfiguration
+@{
+    string apiUrl = @OptionsApplicationConfiguration.Value.ApplicationHostUrl;
+    ViewData["Title"] = "Nurse";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="PageBorder">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table color-table PageTitle">
+                Nurse Details
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="col-md-8">
+                <div class="table color-table">
+                    <dl class="row">
+
+                        <dt class="col-sm-3 padd5">
+                            Nurse Name
+                        </dt>
+                        <dd class="col-sm-9 padd5">
+                            : @Html.DisplayFor(model => model.FullName)
+                        </dd>
+
+                        <dt class="col-sm-3 padd5">
+                            Gender
+                        </dt>
+                        <dd class="col-sm-9 padd5">
+                            : @(Model.Gender == 1 ? "Male" : (Model.Gender == 2 ? "Female" : ""))
+                        </dd>
+                        <dt class="col-sm-3 padd5">
+                            Date of Birth
+                        </dt>
+                        <dd class="col-sm-9 padd5">
+                            : @Model.DateOfBirth.ToString("dd-MM-yyyy")
+                        </dd>
+                        <dt class="col-sm-3 padd5">
+                            Qualification
+                        </dt>
+                        <dd class="col-sm-9 padd5">
+                            : @Html.DisplayFor(model => model.QualificationName)
+                        </dd>
+                        <dt class="col-sm-3 padd5">
+                            Registration Number
+                        </dt>
+                        <dd class="col-sm-9 padd5">
+                            : @Html.DisplayFor(model => model.RegistrationNumber)
+                        </dd>
+                        <dt class="col-sm-3 padd5">
+                            Spoke Hospital Name
+                        </dt>
+                        <dd class="col-sm-9 padd5">
+                            : @Html.DisplayFor(model => model.SpokeHospitalName)
+                        </dd>
+                        <dt class="col-sm-3 padd5">
+                            Experience
+                        </dt>
+                        <dd class="col-sm-9 padd5">
+                            : @(Model.Experience != null ? Model.Experience + " Year." : "")
+                        </dd>
+                        <dt class="col-sm-3 padd5">
+                            Language
+                        </dt>
+                        <dd class="col-sm-9 padd5">
+                            : @Html.DisplayFor(model => model.Language)
+                        </dd>
+                        <dt class="col-sm-3 padd5">
+                            Created On
+                        </dt>
+                        <dd class="col-sm-9 padd5">
+                            : @Model.CreatedOn.ToString("dd-MM-yyyy")
+                        </dd>
+                        <dt class="col-sm-3 padd5">
+                            Created By
+                        </dt>
+                        <dd class="col-sm-9 padd5">
+                            : @Html.DisplayFor(model => model.CreatedByName)
+                        </dd>
+                        <dt class="col-sm-3 padd5">
+                            Status
+                        </dt>
+                        <dd class="col-sm-9 padd5">
+                            : @Html.DisplayFor(model => model.StatusName)
+                        </dd>
+                    </dl>
+
+                </div>
+            </div>
+            <div class="col-md-4 text-center">
+                <div style="display: inline-grid;">
+                    @if (Model.Image != null && Model.Image != "")
+                    {
+                        <img id="imagePreview" alt="" src="@Model.Image" class="mt-4 p-image" style="height:200px; width:200px; border-radius:20%;" />
+                    }
+                    else
+                    {
+                        <img id="imagePreview" alt="" src="~/images/GuardImage.png" class="mt-4 p-image " style="height:200px; width:200px; border-radius:20%;" />
+                    }
+
+                    @if (Model.Signature != null && Model.Signature != "")
+                    {
+                        <img id="imagePreview" alt="" src="@Model.Signature" class="mt-4 p-image" style="height:200px; width:200px; border-radius:20%;" />
+                    }
+                    else
+                    {
+                        <img id="imagePreview" alt="" src="~/images/SignauteImage.png" class="mt-4 p-image " style="height:150px; width:175px; border-radius:20%;" />
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="table color-table PageTitle">
+                Contact Details
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="table color-table">
+                <dl class="">
+                    <dt class="col-sm-2 padd5">
+                        Phone Number
+                    </dt>
+                    <dd class="col-sm-10 padd5">
+                        : @Html.DisplayFor(model => model.ContactNumber)
+                    </dd>
+
+                    <dt class="col-sm-2 padd5">
+                        Email Address
+                    </dt>
+                    <dd class="col-sm-10 padd5">
+                        : @Html.DisplayFor(model => model.EmailAddress)
+                    </dd>
+                    <dt class="col-sm-2 padd5">
+                        Facebook Profile
+                    </dt>
+                    <dd class="col-sm-10 padd5">
+                        : @(Model.FacebookProfile != null ? Model.FacebookProfile : "")
+                    </dd>
+                    <dt class="col-sm-2 padd5">
+                        Twitter Profile
+                    </dt>
+                    <dd class="col-sm-10 padd5">
+                        : @(Model.TwitterProfile != null ? Model.TwitterProfile : "")
+                    </dd>
+                    <dt class="col-sm-2 padd5">
+                        Linkedin Profile
+                    </dt>
+                    <dd class="col-sm-10 padd5">
+                        : @(Model.LinkedinProfile != null ? Model.LinkedinProfile : "")
+                    </dd>
+                </dl>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="table color-table PageTitle">
+                Address
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="table color-table">
+                <dl class="">
+                    <dt class="col-sm-2 padd5">
+                        Address Line 1
+                    </dt>
+                    <dd class="col-sm-10 padd5">
+                        : @Html.DisplayFor(model => model.AddressLine1)
+                    </dd>
+                    <dt class="col-sm-2 padd5">
+                        Address Line 2
+                    </dt>
+                    <dd class="col-sm-10 padd5">
+                        : @Html.DisplayFor(model => model.AddressLine2)
+                    </dd>
+                    <dt class="col-sm-2 padd5">
+                        State
+                    </dt>
+                    <dd class="col-sm-10 padd5">
+                        : @Html.DisplayFor(model => model.StateName)
+                    </dd>
+                    <dt class="col-sm-2 padd5">
+                        District
+                    </dt>
+                    <dd class="col-sm-10 padd5">
+                        : @Html.DisplayFor(model => model.DistrictName)
+                    </dd>
+                    <dt class="col-sm-2 padd5">
+                        City
+                    </dt>
+                    <dd class="col-sm-10 padd5">
+                        : @Html.DisplayFor(model => model.CityName)
+                    </dd>
+                    <dt class="col-sm-2 padd5">
+                        Pin Code
+                    </dt>
+                    <dd class="col-sm-10 padd5">
+                        : @Html.DisplayFor(model => model.PinCode)
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+    <div>
+        <div class="row mb-5">
+            <div class="col-md-12 text-left">
+                <a href="@apiUrl/UserDetail/Edit?id=@Model.NurseId&refPage=Nurse" class="btn btn-primary">Edit</a>
+                <a asp-action="Index" class="btn btn-primary">Back to List</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- /.content -->
+</div>

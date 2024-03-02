@@ -1,0 +1,102 @@
+﻿@model eSanjeevaniIcu.Portal.Models.PatientDetailsViewModel
+@using Microsoft.Extensions.Options;
+@using eSanjeevaniIcu.Portal.Controllers;
+@inject IOptions<ApplicationConfigurations> OptionsApplicationConfiguration
+@{
+    string apiUrl = @OptionsApplicationConfiguration.Value.ApplicationHostUrl;
+    ViewData["Title"] = "Patient Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="~/css/sweet-alert.css" rel="stylesheet" />
+<script src="~/js/sweet-alert.js"></script>
+<div class="PageBorder">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table color-table PageTitle">
+                Patient Details
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+            <dl>
+                <dt class="col-md-3">Patient Name</dt>
+                <dd class="col-md-9">: @Model.PatientName</dd>
+                <dt class="col-md-3">Date</dt>
+                <dd class="col-md-9">: @Model.Date.ToString("dd-MM-yyyy")</dd>
+                <dt class="col-md-3">Created On</dt>
+                <dd class="col-md-9">: @Model.CreatedOn.ToString("dd-MM-yyyy")</dd>
+                <dt class="col-md-3">Created By</dt>
+                <dd class="col-md-9">: @Model.CreatedByName</dd>
+            </dl>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12 bg-red mb-10 mt-4">
+                <div class="row align-items-center PageTitle">
+                    <div class="col-sm-6">
+                        <div class="breadcrumbs-area1 clearfix">
+                            <h4 class="page-title1 pull-left font-18">Patient Data</h4>
+                        </div>
+
+                    </div>
+                    <div class="col-sm-6 fr">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <table class="table color-table">
+                    <thead class="">
+                        <tr>
+                            <th>Temprature<span class="text-dangar"></span></th>
+                            <th>Respiratory Rate<span class="text-dangar"></span></th>
+                            <th>Oxygen Saturation<span class="text-dangar"></span></th>
+                            <th>Blood Pressure DIA<span class="text-dangar"></span></th>
+                            <th>Blood Pressure SYS<span class="text-dangar"></span></th>
+                            <th>Heart Rate<span class="text-dangar"></span></th>
+                            <th>PatientStatus<span class="text-dangar"></span></th>
+                        </tr>
+                    </thead>
+                    <tbody id="sections">
+                        @if (Model.lstPatientDetailsViewModel != null && Model.lstPatientDetailsViewModel.Count > 0)
+                        {
+                            foreach (var item in Model.lstPatientDetailsViewModel)
+                            {
+                                <tr class="section">
+                                    <td style="display:none">
+                                        <input type="hidden" id="hdnPatientDetailId" value="@item.PatientDetailId" />
+                                    </td>
+                                    <td>@item.Temperature </td>
+                                    <td>@item.RrRespiratoryRate </td>
+                                    <td>@item.OxygenSaturationSpo2 </td>
+                                    <td>@item.BloodPressureDia </td>
+                                    <td>@item.BloodPressureSys </td>
+                                    <td>@item.HeartRate </td>
+                                    <td>@Model.lstPatientStatus.Where(x=>x.Value==item.PatientStatus.ToString()).Select(s=>s.Text).FirstOrDefault() </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-md-12 mt-4 last-row" style="margin-top:20px">
+
+            <input type="hidden" id="hdnDate" value="@Model.Date.ToString("yyyy-MM-dd")" />
+            <input type="hidden" id="hdnPatientId" value="@Model.PatientId" />
+            <a title="Edit" onclick="EditPatientDetail(this)" class="btn btn-primary">Edit</a>
+            <a asp-action="Index" class="btn btn-primary">Back to List</a>
+        </div>
+    </div>
+
+</div>
+<script>
+    function EditPatientDetail(eve) {
+        var patientId = $('#hdnPatientId').val();
+        var daDate = $('#hdnDate').val();
+        window.location.href = "@apiUrl/PatientDetails/Edit?id=" + patientId + "&dt=" + daDate;
+    }
+</script>

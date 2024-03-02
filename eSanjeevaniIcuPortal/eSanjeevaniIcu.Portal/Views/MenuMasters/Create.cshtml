@@ -1,0 +1,225 @@
+﻿@model eSanjeevaniIcu.Portal.Models.MenuMasterViewModel
+@{
+    ViewData["Title"] = "Menu Master";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    /* The container */
+    .container {
+        display: block;
+        position: relative;
+        padding-left: 35px;
+        margin-bottom: 12px;
+        cursor: pointer;
+        font-size: 22px;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+
+        /* Hide the browser's default checkbox */
+        .container input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+
+    /* Create a custom checkbox */
+    .checkmark {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 25px;
+        width: 25px;
+        /*background-color: #eee;*/
+        /*background-color: #da0019;*/
+        border-radius: 5px;
+        border: solid 1px #da0019;
+    }
+
+    /* On mouse-over, add a grey background color */
+    .container:hover input ~ .checkmark {
+        background-color: #ccc;
+    }
+
+    /* When the checkbox is checked, add a blue background */
+    .container input:checked ~ .checkmark {
+        /*background-color: #2196F3;*/
+        background-color: green;
+        border-radius: 5px;
+        border: solid 1px green;
+    }
+
+    /* Create the checkmark/indicator (hidden when not checked) */
+    .checkmark:after {
+        content: "";
+        position: absolute;
+        display: none;
+    }
+
+    /* Show the checkmark when checked */
+    .container input:checked ~ .checkmark:after {
+        display: block;
+    }
+
+    /* Style the checkmark/indicator */
+    .container .checkmark:after {
+        left: 9px;
+        top: 5px;
+        width: 5px;
+        height: 10px;
+        border: solid white;
+        border-width: 0 3px 3px 0;
+        -webkit-transform: rotate(45deg);
+        -ms-transform: rotate(45deg);
+        transform: rotate(45deg);
+    }
+
+    .spacer {
+        padding-left: 30px;
+    }
+</style>
+<script>
+    $(document).ready(function () {
+        if ('@ViewBag.SubmitResult' == 'Duplicate') {
+            swal("Warning", 'Menu is already exist', "warning");
+        }
+    });
+</script>
+<div class="PageBorder">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table color-table PageTitle">
+                Create Menu
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label asp-for="Name" class="control-label"></label>
+                            <input asp-for="Name" class="form-control" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Description" class="control-label"></label>
+                            <input asp-for="Description" class="form-control" />
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="control-label">Parent Menu</label>
+                            @Html.DropDownListFor(m => m.ParentMenuId, Model.lstParentMenus, "N/A", new { @class = "form-control", @onchange = "javascript:GetNewSequence(this.value);", @name = "ddlParentMenu", ID = "ddlParentMenu" })
+                            <span asp-validation-for="ParentMenuId" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Sequence" class="control-label"></label>
+                            <input type="hidden" asp-for="Sequence" class="form-control" id="hfSequence" />
+                            <input type="text" asp-for="Sequence" class="form-control" id="txtSequence" />
+                            <span asp-validation-for="Sequence" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label asp-for="Title" class="control-label"></label>
+                            <input asp-for="Title" class="form-control" />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Icon" class="control-label"></label>
+                            <input asp-for="Icon" class="form-control" />
+                            <span asp-validation-for="Icon" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label asp-for="Url" class="control-label"></label>
+                            <input asp-for="Url" class="form-control" />
+                            <span asp-validation-for="Url" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-3">
+                            <label asp-for="DataOfDays" class="control-label">Display Data Of (in Days)</label>
+                            <select class="form-control" asp-for="DataOfDays">
+                                <option value="">Select</option>
+                                <option value="15">15</option>
+                                <option value="30">30</option>
+                                <option value="45">45</option>
+                                <option value="60">60</option>
+                                <option value="90">90</option>
+                                <option value="180">180</option>
+                                <option value="240">240</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="control-label">Has Submenu</label>
+                            <label class="container">
+                                @Html.CheckBox("HasSubmenu", Model.HasSubMenu)
+                                <span class="checkmark"></span>
+                            </label>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-12 text-center">
+                            <button type="submit" class="btn btn-primary">Create</button>
+                            <a asp-action="Index" class="btn btn-primary">Back to List</a>
+
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        var lastValue = $('#ddlParentMenu option:last-child').text();
+        var firstIndexVal = lastValue.split(' ');
+        var lastValueText = firstIndexVal[0];
+        var newLastValueText = parseFloat(lastValueText) + 1.00;
+        $("#txtSequence").val(newLastValueText.toFixed(2));
+    });
+    function GetNewSequence(selectedParentId) {
+        var selectedText = $("#ddlParentMenu option:selected").text();
+        var firstIndexVal = selectedText.split(' ');
+        var seleTextValue = firstIndexVal[0];
+        if (seleTextValue == 'N/A') {
+            var lastValue = $('#ddlParentMenu option:last-child').text();
+            var firstIndexVal = lastValue.split(' ');
+            var lastValueText = firstIndexVal[0];
+            var newLastValueText = parseFloat(lastValueText) + 1.00;
+            $("#txtSequence").val(newLastValueText.toFixed(2));
+        }
+        else {
+            var result = parseFloat(seleTextValue) + parseFloat('0.01');
+            var newValueText = result.toFixed(2);
+            $("#txtSequence").val(newValueText);
+        }
+
+        var lastValue = $('#ddlParentMenu option:last-child').val();
+    }
+    //
+    $("#txtSequence").change(function () {
+        $("#hfSequence").val($("#txtSequence").val());
+        $('#hfSequence').attr('value', $("#txtSequence").val());
+    });
+</script>

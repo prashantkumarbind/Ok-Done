@@ -1,0 +1,76 @@
+﻿@model IEnumerable<eSanjeevaniIcu.Portal.Models.MenuMasterViewModel>
+@using Microsoft.AspNetCore.Http
+@using Microsoft.Extensions.Options;
+@using eSanjeevaniIcu.Portal.Controllers;
+@using eSanjeevaniIcu.Portal;
+
+@inject IOptions<ApplicationConfigurations> OptionsApplicationConfiguration
+@{
+    string apiUrl = @OptionsApplicationConfiguration.Value.ApplicationHostUrl;
+}
+<div>
+    <ul id="sidebarnav">
+        @{foreach (var item in Model.Where(s => s.ParentMenuId == null).GroupBy(Obj => new { Obj.MenuId }).Distinct().ToList())
+            {
+                <li>
+                    <a id=@item.FirstOrDefault().MenuId href=@item.FirstOrDefault().Url aria-expanded="false" title="@item.FirstOrDefault().Title" onclick="setSelectedMenuId(this);">
+                        <span class='@item.FirstOrDefault().Icon' style="color:#ff9933;; font-size:15px;"></span>
+                        <span class="hide-menu">@item.FirstOrDefault().Description</span>
+                    </a>
+                    <ul aria-expanded="false" class="collapse">
+                        @{foreach (var firstItem in (Model.Where(s => s.ParentMenuId == item.FirstOrDefault().MenuId).ToList()))
+                            {
+                                <li style="padding-left:5px;">
+                                    <a id=@firstItem.MenuId href=@firstItem.Url aria-expanded="false" title="@firstItem.Title" onclick="setSelectedMenuId(this);">
+                                        <span class='@firstItem.Icon' style="color:#ff9933;; font-size:8px;"></span>
+                                        <span class="hide-menu">@firstItem.Description</span>
+                                    </a>
+                                    <ul>
+                                        @foreach (var secondItem in (Model.Where(s => s.ParentMenuId == firstItem.MenuId).ToList()))
+                                        {
+                                            <li style="padding-left:5px;">
+                                                <a id=@secondItem.MenuId href=@secondItem.Url aria-expanded="false" title="@secondItem.Title" onclick="setSelectedMenuId(this);">
+                                                    <span class='@secondItem.Icon' style="color:#ff9933;; font-size:8px;"></span>
+                                                    <span class="hide-menu">@secondItem.Description</span>
+                                                </a>
+
+                                            </li>
+
+                                        }
+                                    </ul>
+
+                                </li>
+
+                            }
+                        }
+                    </ul>
+                </li>
+
+            }
+        }
+        <li>
+            <a href="@Url.Action("ChangePassword", "Home")" aria-expanded="false" title="Change Password">
+                <span class="mdi mdi-account-key" style="color:#ff9933;; font-size:15px;"></span>
+                <span class="hide-menu">Change Password</span>
+            </a>
+        </li>
+    </ul>
+</div>
+<div style="height: 40px;bottom: 5px;">
+</div>
+<script type="text/javascript">
+        function setSelectedMenuId(ids) {
+            var selectedMenuId = parseInt($(ids).attr('id'));
+            var url = " @apiUrl";
+            url += "/Common/SetSelectedMenuId/";
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: { menuId: selectedMenuId },
+                success: function (response) {
+                    return;
+                    //alert("You selected: " + response);
+                }
+            });
+        }
+</script>

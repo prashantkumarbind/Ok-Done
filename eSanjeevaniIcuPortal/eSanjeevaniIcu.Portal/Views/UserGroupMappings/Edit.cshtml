@@ -1,0 +1,55 @@
+﻿@model eSanjeevaniIcu.Portal.Models.UserGroupMappingViewModel
+
+@{
+    ViewData["Title"] = "User Group Mapping";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script>
+    $(document).ready(function () {
+        //$('#ddlUser').disabled = true;
+        document.getElementById("ddlUser").disabled=true;
+    });
+</script>
+<div class="PageBorder">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table color-table PageTitle">
+                Edit User Group Mapping
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <form asp-action="Edit">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="UserGroupMappingId" />
+                <input type="hidden" asp-for="PrincipalId" />
+                <div class="form-group">
+                    <label class="control-label">User Name</label>
+                    @Html.DropDownListFor(m => m.PrincipalId, Model.lstUser, "Select User", new { @class = "form-control", @name = "ddlUser", ID = "ddlUser" })
+                    <span asp-validation-for="PrincipalId" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Group</label>
+                    @Html.DropDownListFor(m => m.GroupId, Model.lstGroup, "Select Group", new { @class = "form-control", @name = "ddlGroup", ID = "ddlGroup" })
+                    <span asp-validation-for="GroupId" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-12 text-center">
+                            <input type="submit" value="Save" class="btn btn-primary" />
+                            <a asp-action="Index" class="btn btn-primary">Back to List</a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="form-control" style="border:none;">
+        <div class="row">
+            <div class="col-md-12">
+            </div>
+        </div>
+    </div>
+</div>
+

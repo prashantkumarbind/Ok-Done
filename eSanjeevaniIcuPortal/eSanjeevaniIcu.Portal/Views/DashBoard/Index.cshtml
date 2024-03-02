@@ -1,0 +1,193 @@
+﻿@model eSanjeevaniIcu.Portal.Models.DasboardViewModel
+@using Microsoft.Extensions.Options;
+@using eSanjeevaniIcu.Portal.Controllers;
+
+@inject IOptions<ApplicationConfigurations> OptionsApplicationConfiguration
+@{
+    string apiUrl = @OptionsApplicationConfiguration.Value.ApplicationHostUrl;
+    string apiReactUrl = @OptionsApplicationConfiguration.Value.ApplicationHostReactUrl;
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@*<link href="~/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">*@
+@* <link href="~/assets/css/icons.css" rel="stylesheet" type="text/css"> *@
+<link href="~/assets/css/style.css" rel="stylesheet" type="text/css">
+<style>
+    .footer {
+        margin-left: 0px;
+        background-color: #ff9933;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 10px;
+        color: white;
+        text-align: right;
+        padding-right: 170px;
+        vertical-align: central;
+        bottom: 10px;
+    }
+
+    .round {
+        vertical-align: middle !important;
+        font-size: 22px !important;
+    }
+
+    .m-l-10 {
+        margin-left: 0px !important;
+    }
+</style>
+<div class="PageBorder" style="background-color:white;">
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table color-table PageTitle">
+                <div class="row">
+                    <div class="col-md-8">
+                        Dashboard
+                    </div>
+                    <div class="col-md-4" style="text-align:right; max-height: 50vh; overflow-y:auto; overflow-x:hidden; display:none;" id="divBell">
+                        <button style="border:10px outset silver;" id="acceptCall"><img src="~/images//calling.png" style="width:50px;height:50px;"></button>
+                        <ul id="CallerName"></ul>
+                        <input type="hidden" id="hdnId" />
+                        <br>
+                        <audio id="myAudio" style="display:none;" controls loop>
+                            <source src="~/audio/emergency-alarm-with-reverb-29431.mp3" type="audio/mpeg">
+                        </audio>
+                        <br>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mb-2">
+        <div class="col-md-3">
+            @Html.DropDownListFor(m=>m.HubHospitalId,Model.lstHubHopital,"Select Hub Hospital",new {@class="form-control", @id="ddlHubHospital"})
+        </div>
+        <div class="col-md-3">
+            <select class="form-control" id="ddlSpokeHospital" onchange="filterPatientDetails()">
+                <option value="">Select Spoke Hospital</option>
+            </select>
+        </div>
+        <div class="col-md-3" style="display:none;">
+            <input type="date" class="form-control" id="textDate" onchange="filterPatientDetails()" />
+        </div>
+        <div class="col-md-3" style="display : none" >
+            <button type="button" id="btncall" class="btn btn-primary"><i class='fas fa-phone-volume' style='font-size:20px;color:red'></i> Video Call </button>
+        </div>
+    </div>
+    @* <div id="iFrameDiv" style="display : none" class="row mb-2">
+        <iframe id="videoCallIframe" allow="camera; microphone" width="480" height="480"></iframe>
+    </div> *@
+    <div id="iFrameDiv" title="Video Call">
+            <iframe id="videoCallIframe" allow="camera; microphone" width="500" height="520" src="">
+            </iframe>
+    </div>
+    <div class="row" id="divPatientCard">
+    </div>
+    <div class="mt-4">
+    </div>
+</div>
+<script>
+    var apiUrl = "@apiUrl";
+</script>
+<script>
+    $("#btncall").click(function () {
+        var url = "@apiUrl";
+        url = "https://comm.nexper.app/participant";
+        $.ajax({
+            url: url,
+            data: {
+                "email": "navrajsingh@outlook.com",
+                "name": "Navraj Singh",
+                "handle": "navraj",
+                "role": ""
+            },
+            cache: false,
+            type: "POST",
+            beforeSend: function () {
+              //  $(".loader").show();
+            },
+            success: function (response) {
+                if (response.success) {
+                    var token = response.data.token;
+                    var url = "@apiUrl";
+                    url += "/call.html?authToken=" + token;
+                    //window.location.href = url;
+                    window.open(url);
+                }
+                else {
+                   // swal("Error", response.responseText, "error");
+                }
+
+            },
+            complete: function () {
+               // $(".loader").hide();
+            },
+            error: function () {
+               // $(".loader").hide();
+            }
+        });
+    });
+
+</script>
+<script src="~/assets/dashboard.js" asp-append-version="true"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.js"></script> 
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script> 
+
+<script>
+    $(document).ready(function () {
+        $('#iFrameDiv').hide();
+        $("#acceptCall").click(function (e) {
+            e.preventDefault();
+            $('#divBell').hide();
+            $('#myAudio')[0].pause();
+            var url = "@apiUrl";
+            url = "https://comm.nexper.app/participant";
+            $.ajax({
+                url: url,
+                data: {
+                    "email": "ravi@outlook.com",
+                    "name": "Ravi",
+                    "handle": "Rav",
+                    "role": ""
+                },
+                cache: false,
+                type: "POST",
+                beforeSend: function () {
+                    //  $(".loader").show();
+                },
+                success: function (response) {
+                    if (response.success) {
+                        var token = response.data.token;
+                        var urlReact = "@apiReactUrl" + token;
+                        //$("#iFrameDiv").dialog();
+                  
+                        $("#iFrameDiv").dialog({
+                            width: 500
+                           
+                        });
+                        //$('#iFrameDiv').show();
+                        $('#videoCallIframe').attr('src', urlReact);
+                
+
+                     /* we are update the concept here below
+                     //pk concept below use here
+                        //$("#iFrameDiv").dialog({ width: 500  });
+                        $('#iFrameDiv').show();
+                        $('#videoCallIframe').attr('src', urlReact);
+                    */
+                    }
+                    else {
+                        // swal("Error", response.responseText, "error");
+                    }
+
+                },
+                complete: function () {
+                    // $(".loader").hide();
+                },
+                error: function () {
+                    // $(".loader").hide();
+                }
+            });
+        });
+    });
+</script>

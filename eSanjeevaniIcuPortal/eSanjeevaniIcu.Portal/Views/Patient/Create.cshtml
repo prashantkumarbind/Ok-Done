@@ -1,0 +1,361 @@
+﻿@model eSanjeevaniIcu.Portal.Models.PatientViewModel
+@using Microsoft.Extensions.Options;
+@using eSanjeevaniIcu.Portal.Controllers;
+
+@inject IOptions<ApplicationConfigurations> OptionsApplicationConfiguration
+@{
+    string apiUrl = @OptionsApplicationConfiguration.Value.ApplicationHostUrl;
+    ViewData["Title"] = "Patients";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .avatar-upload {
+        position: relative;
+        max-width: 120px;
+        margin: 83px auto 0;
+    }
+
+        .avatar-upload .avatar-edit {
+            position: absolute;
+            right: -7px;
+            z-index: 1;
+            top: -67px;
+        }
+
+        .avatar-upload img {
+            width: 200px;
+            height: 200px;
+        }
+
+        .avatar-upload .avatar-edit input + label:after {
+            content: "\f040";
+            font-family: 'FontAwesome';
+            color: #757575;
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            right: 0;
+            text-align: center;
+            margin: auto;
+        }
+
+        .avatar-upload .avatar-edit input + label {
+            display: inline-block;
+            width: 34px;
+            height: 34px;
+            margin-bottom: 0;
+            border-radius: 100%;
+            background: #FFFFFF;
+            border: 1px solid transparent;
+            box-shadow: 0px 2px 4px 0px rgb(0 0 0 / 12%);
+            cursor: pointer;
+            font-weight: normal;
+            transition: all 0.2s ease-in-out;
+        }
+
+    #imageUpload {
+        display: none !important;
+    }
+
+</style>
+<div class="PageBorder">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table color-table PageTitle">
+                Create Patients
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="col-md-3" style="display:inline-block">
+                    <div class="avatar-upload">
+                        <div class="avatar-edit">
+                            <input type="file" id="imageUpload" name="imageUpload" accept=".png,.jpg,.jpeg" onchange="ShowImagePreview(this)">
+                            <input type="hidden" id="upImage" name="Image">
+                            <input type="hidden" id="slipname">
+                            <label for="imageUpload"></label>
+                        </div>
+                        <div>
+                            <img id="imagePreview" src="~/images/user.png" style="border-radius: 20%;margin-top: -70px; margin-left: -70px;" height="200px" width="200px;">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label>First Name<span class="text-danger">*</span></label>
+                        <div style="display:flex">                           
+                            <input asp-for="FirstName" type="text" maxlength="50" class="form-control" id="txtFirstName" placeholder="First Name">
+                        </div>
+                        <span asp-validation-for="FirstName" class="text-danger"></span>                        
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label>Middle Name</label>
+                        <input asp-for="MiddleName" maxlength="50" type="text" class="form-control" id="txtMiddleName" placeholder="Middle Name">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label>Last Name</label>
+                        <input asp-for="LastName" maxlength="50" type="text" class="form-control" id="txtLastName" placeholder="Last Name">
+                        <div class="valid-feedback">
+                        </div>
+                    </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                        <label>DOB<span class="text-danger">*</span></label>
+                        <input asp-for="DateOfBirth" type="date" class="form-control" id="txtDateOfBirth" value="">                       
+                        <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label>Gender<span class="text-danger">*</span></label>
+                        <select class="form-control" asp-for="Gender">
+                            <option value="">Select</option>
+                            <option value="1">Male</option>
+                            <option value="2">Female</option>
+                        </select>
+                        <span asp-validation-for="Gender" class="text-danger"></span>                        
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label>Email Address<span class="text-danger">*</span></label>
+                        <input asp-for="EmailAddress" type="text" class="form-control" id="txtEmailAddress" placeholder="Email">                       
+                        <span asp-validation-for="EmailAddress" class="text-danger"></span>
+                    </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                        <label>Phone Number<span class="text-danger">*</span></label>
+                        <input asp-for="ContactNumber" type="text" class="form-control" id="txtContactNumber" placeholder="Phone Number">
+                        <span asp-validation-for="ContactNumber" class="text-danger"></span>                       
+                    </div>                   
+                    <div class="col-md-4 mb-3">
+                        <label>Weight in Kg<span class="text-danger">*</span></label>
+                        <input asp-for="Weight" type="text" class="form-control" id="txtWeight" placeholder="Weight">
+                        <span id="spnWeight" class="text-dangar" style="display:none">Weight is required</span>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label>Blood Group<span class="text-danger">*</span></label>
+                        <select class="form-control" asp-for="BloodGroup">
+                            <option value="">Select BloodGroup</option>
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                        </select>
+                        <span asp-validation-for="BloodGroup" class="text-danger"></span>                        
+                    </div>
+                    </div>
+                    <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label>Admit Date<span class="text-danger">*</span></label>
+                        <input asp-for="AdmitDate" type="date" class="form-control" id="txtAdmitDate" value="">                       
+                        <span asp-validation-for="AdmitDate" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-4 mb-3">                        
+                        <label>ICU Name<span class="text-danger">*</span></label>                       
+                        <select asp-for="IcuId" id="ICU" class="form-control"></select>
+                        @* @Html.DropDownListFor(m => m.IcuId, Model.lstICU, "Select ICU", new { @class = "form-control", @name = "ddlICU", ID = "ddlICU" }) *@
+                       @*  <span id="spnICU" class="text-dangar" style="display:none">ICU is required</span> *@
+                        <span asp-validation-for="IcuId" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-4 mb-3">                       
+                        <label>Bed No. <span class="text-danger">*</span></label>
+                        <select asp-for="BedId" id="BED" class="form-control"></select>                        
+                       @*  @Html.DropDownListFor(m => m.BedId, Model.lstBed, "Select Bed", new { @class = "form-control", @name = "ddlBed", ID = "ddlBed" }) *@
+                        @* <span id="spnBed" class="text-dangar" style="display:none">Bed is required</span>  *@   
+                        <span asp-validation-for="BedId" class="text-danger"></span>
+                    </div>
+                    </div>
+                    <div class="row">
+                    <div class="col-md-4 mb-3">                      
+                        <label>Doctor Name <span class="text-danger">*</span></label>
+                        @Html.DropDownListFor(m => m.DoctorId, Model.lstDoctor, "Select Doctor", new { @class = "form-control", @name = "ddlDoctor", ID = "ddlDoctor" })
+                        @* <span id="spnDoctor" class="text-dangar" style="display:none">Doctor Name is required</span> *@
+                        <span asp-validation-for="DoctorId" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label>Speciality</label>
+                       <select class="form-control" >
+                            <option value="">Select</option>                           
+                        </select>
+                        <span id="spnSpeciality" class="text-dangar" style="display:none">Speciality is required</span>
+                    
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="CreatedByName">Serverity </label>
+                        <input asp-for="Serverity" maxlength="100" type="text" class="form-control" id="txtCreatedByName" placeholder="Serverity">
+                    </div>
+                    </div>
+                </div>
+               
+                
+                <!-- Address sectionn -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="table color-table PageTitle">
+                            Address
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="Address">Address Line 1<span class="text-danger">*</span></label>
+                            <input type="text" maxlength="100" class="form-control" id="txtAddressLine1" placeholder="Address Line 1" asp-for="AddressLine1">
+                            <span asp-validation-for="AddressLine1" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="Address">Address Line 2</label>
+                            <input type="text" maxlength="100" class="form-control" id="txtAddressLine2" placeholder="Address Line 2" asp-for="AddressLine2">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label>State <span class="text-danger">*</span></label>
+                            @Html.DropDownListFor(m => m.StateId, Model.lstStateMaster, "Select State", new { @class = "form-control", @name = "ddlStateMaster", ID = "ddlStateMaster" })
+                            @* <span id="spnState" class="text-dangar" style="display:none">State is required</span> *@
+                            <span asp-validation-for="StateId" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label>District <span class="text-danger">*</span></label>
+                            <select asp-for="DistrictId" id="ddlDistrict" class="form-control"></select>
+                           @*  @Html.DropDownListFor(m => m.DistrictId, Model.lstDistrictMaster, "Select District", new { @class = "form-control", @name = "ddlDistrictMaster", ID = "ddlDistrictMaster" }) *@
+                            @* <span id="spnDistrict" class="text-dangar" style="display:none">District is required</span> *@
+                            <span asp-validation-for="DistrictId" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label>City <span class="text-danger">*</span></label>
+                            @Html.DropDownListFor(m => m.CityId, Model.lstCityMaster, "Select City", new { @class = "form-control", @name = "ddlCity", ID = "ddlCity" })
+                            @* <span id="spnCity" class="text-dangar" style="display:none">City is required</span> *@
+                            <span asp-validation-for="CityId" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label>PIN <span class="text-danger">*</span></label>
+                            <input asp-for="PinCode" maxlength="100" type="text" class="form-control" id="txtPinCode" placeholder="Pin Code">
+                            <span id="spnPinCode" class="text-dangar" style="display:none">PIN is required</span>
+                        </div>
+
+                    </div>
+                </div>
+                <!-- Address section End -->
+                <div class="row mb-5">
+                    <div class="col-md-12 text-center">
+                        <button type="submit" class="btn btn-primary">Create</button>
+                        <a asp-action="Index" class="btn btn-primary">Back to List</a>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+}
+<script>
+    function ShowImagePreview(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('#imagePreview').prop('src', e.target.result);
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    $(document).ready(function () {        
+        loadICU();
+
+        $('#ddlStateMaster').change(function () {
+            var stateId = $(this).val();
+            if (stateId > 0) {
+                loadDistrict(stateId);
+            }
+        });
+
+        $('#ICU').change(function () {
+            var icuId = $(this).val();
+            if (icuId > 0) {
+                loadBED(icuId);
+            }
+        });
+    })
+
+    function loadDistrict(stateId) {
+        $('#ddlDistrict').empty();
+
+        $.ajax({
+            type: 'POST',
+            url: '/Patient/GetDistrict?sId= ' + stateId,           
+            data: {},
+            success: function (response) {
+                if (response.value != null && response.value != undefined) {                    
+                    $('#District').append('<option>--Select District--</option>');
+                    $.each(response.value, function (i, data) {
+                        $('#ddlDistrict').append('<option value="' + data.districtId + '">' + data.districtName + '</option>');
+                    });
+                }
+                else {                  
+                    $('#ddlDistrict').append('<option>--District not available--</option>');
+                }
+            }
+        });
+    }
+
+    function loadICU() {
+        $('#ICU').empty();
+       
+        $.ajax({
+            type: 'GET',
+            url: '/Patient/GetIcu',
+            data: {},
+            success: function (response) {
+                if (response.value != null && response.value != undefined) {
+                    $('#ICU').append('<option>--Select ICU--</option>');
+                    $('#BED').append('<option>--Select BED--</option>');
+                    $.each(response.value, function (i, data) {
+                        $('#ICU').append('<option value="' + data.icuId + '">' + data.icuName + '</option>');
+                    });
+                }
+                else {
+                    $('#ICU').append('<option>--ICU not available--</option>');
+                    $('#BED').append('<option>--BED not available--</option>');
+                }
+            }
+        });
+    }
+
+    function loadBED(icuId) {
+        $('#BED').empty();
+
+        $.ajax({
+            type: 'POST',
+            url: '/Patient/GetBed?Id=' + icuId,
+            data: {},
+            success: function (response) {
+                if (response.value != null && response.value != undefined) {                   
+                    $('#BED').append('<option>--Select BED--</option>');
+                    $.each(response.value, function (i, data) {
+                        $('#BED').append('<option value="' + data.bedId + '">' + data.bedNumber + '</option>');
+                    });
+                }
+                else {                 
+                    $('#BED').append('<option>--BED not available--</option>');
+                }
+            }
+        });
+    }
+
+    
+
+  
+</script>

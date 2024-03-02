@@ -1,0 +1,250 @@
+﻿@model eSanjeevaniIcu.Portal.Models.PatientViewModel
+@using Microsoft.Extensions.Options;
+@using eSanjeevaniIcu.Portal.Controllers;
+
+@inject IOptions<ApplicationConfigurations> OptionsApplicationConfiguration
+@{
+    string apiUrl = @OptionsApplicationConfiguration.Value.ApplicationHostUrl;
+    ViewData["Title"] = "Patients";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .avatar-upload {
+        position: relative;
+        max-width: 120px;
+        margin: 83px auto 0;
+    }
+
+        .avatar-upload .avatar-edit {
+            position: absolute;
+            right: -7px;
+            z-index: 1;
+            top: -67px;
+        }
+
+        .avatar-upload img {
+            width: 200px;
+            height: 200px;
+        }
+
+        .avatar-upload .avatar-edit input + label:after {
+            content: "\f040";
+            font-family: 'FontAwesome';
+            color: #757575;
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            right: 0;
+            text-align: center;
+            margin: auto;
+        }
+
+        .avatar-upload .avatar-edit input + label {
+            display: inline-block;
+            width: 34px;
+            height: 34px;
+            margin-bottom: 0;
+            border-radius: 100%;
+            background: #FFFFFF;
+            border: 1px solid transparent;
+            box-shadow: 0px 2px 4px 0px rgb(0 0 0 / 12%);
+            cursor: pointer;
+            font-weight: normal;
+            transition: all 0.2s ease-in-out;
+        }
+
+    #imageUpload {
+        display: none !important;
+    }
+
+</style>
+<div class="PageBorder">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table color-table PageTitle">
+                Edit Patient
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <form asp-action="Edit">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="PatientId" />
+                <div class="col-md-3" style="display:inline-block">
+                    <div class="avatar-upload">
+                        <div class="avatar-edit">
+                            <input type="file" id="imageUpload" name="imageUpload" accept=".png,.jpg,.jpeg" onchange="ShowImagePreview(this)">
+                            <input type="hidden" id="upImage" name="Image">
+                            <input type="hidden" id="slipname">
+                            <label for="imageUpload"></label>
+                        </div>
+                        <div>
+                            <img id="imagePreview" src="~/images/GuardImage.png" style="border-radius: 20%;margin-top: -70px; margin-left: -70px;" height="200px" width="200px;">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <div class="col-md-4 mb-3">
+                        <label for="validationCustom01">First Name<span class="text-dangar">*</span></label>
+                        <div style="display:flex">                            
+                            <input asp-for="FirstName" type="text" maxlength="50" class="form-control" id="txtFirstName" placeholder="First Name">
+                        </div>
+                        <span id="spnFirstName" class="text-dangar" style="display:none">First Name is required</span>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="validationCustom01">Middle Name</label>
+                        <input asp-for="MiddleName" maxlength="50" type="text" class="form-control" id="txtMiddleName" placeholder="Middle Name">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="validationCustom01">Last Name</label>
+                        <input asp-for="LastName" maxlength="50" type="text" class="form-control" id="txtLastName" placeholder="Last Name">
+                        <div class="valid-feedback">
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="validationCustom01">DOB<span class="text-dangar">*</span></label>
+                        <input asp-for="DateOfBirth" type="date" class="form-control" id="txtDateOfBirth">
+                        <span id="spnDateOfBirth" class="text-dangar" style="display:none">Date Of Birth is required</span>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="validationCustom01">Gender<span class="text-dangar">*</span></label>
+                        <select class="form-control" asp-for="Gender">
+                            <option value="">Select</option>
+                            <option value="1">Male</option>
+                            <option value="2">Female</option>
+                        </select>
+                        <span id="spnGender" class="text-dangar" style="display:none">Gender is required</span>
+                    </div>
+                   
+                    <div class="col-md-4 mb-3">
+                        <label for="validationCustom01">Email Address<span class="text-dangar">*</span></label>
+                        <input asp-for="EmailAddress" type="text" class="form-control" id="txtEmailAddress" placeholder="Email">
+                        <span id="spnEmailAddress" class="text-dangar" style="display:none">Email is required</span>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="validationCustom01">Phone Number<span class="text-dangar">*</span></label>
+                        <input asp-for="ContactNumber" type="text" class="form-control" id="txtContactNumber" placeholder="Phone">
+                        <span id="spnContactNumber" class="text-dangar" style="display:none">Phone is required</span>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="validationCustom01">Weight in Kg<span class="text-dangar">*</span></label>
+                        <input asp-for="Weight" type="text" class="form-control" id="txtWeight" placeholder="Weight">
+                        <span id="spnWeight" class="text-dangar" style="display:none">Weight is required</span>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="validationCustom01">Blood Group<span class="text-dangar">*</span></label>
+                        <select class="form-control" asp-for="BloodGroup">
+                            <option value="">Select BloodGroup</option>
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                        </select>
+                        <span id="spnBloodGroup" class="text-dangar" style="display:none">BloodGroup is required</span>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="validationCustom01">Admit Date<span class="text-dangar">*</span></label>
+                        <input asp-for="AdmitDate" type="date" class="form-control" id="txtAdmitDate">
+                        <span id="spnAdmitDate" class="text-dangar" style="display:none">Admit Date is required</span>
+                    </div>
+                    <div class="col-md-4 mb-3">                       
+                        <label>ICU Name<span class="text-danger">*</span></label>
+                        @Html.DropDownListFor(m => m.IcuId, Model.lstICU, "Select ICU", new { @class = "form-control", @name = "ddlICU", ID = "ddlICU" })
+                        <span id="spnICU" class="text-dangar" style="display:none">ICU is required</span>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label>Bed No. <span class="text-danger">*</span></label>
+                        @Html.DropDownListFor(m => m.BedId, Model.lstBed, "Select Bed", new { @class = "form-control", @name = "ddlBed", ID = "ddlBed" })
+                        <span id="spnBed" class="text-dangar" style="display:none">Bed is required</span>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label>Doctor Name <span class="text-danger">*</span></label>
+                        @Html.DropDownListFor(m => m.DoctorId, Model.lstDoctor, "Select Doctor", new { @class = "form-control", @name = "ddlDoctor", ID = "ddlDoctor" })
+                        <span id="spnDoctor" class="text-dangar" style="display:none">Doctor Name is required</span>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="validationCustom01">Speciality<span class="text-dangar">*</span></label>
+                        <select class="form-control">
+                            <option value="">Select</option>
+                        </select>
+                        <span id="spnSpeciality" class="text-dangar" style="display:none">Speciality is required</span>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="validationCustom01">Serverity<span class="text-dangar"></span></label>
+                        <input asp-for="Serverity" type="text" class="form-control" id="txtServerity" placeholder="Serverity">
+                        <span id="spnServerity" class="text-dangar" style="display:none">Serverity is required</span>
+                    </div>                   
+                </div>
+
+
+                <!-- Address sectionn -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="table color-table PageTitle">
+                            Address
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                    <div class="row">                     
+                        <div class="col-md-6 mb-3">
+                            <label for="Address">Address Line 1<span class="text-danger">*</span></label>
+                            <input type="text" maxlength="100" class="form-control" id="txtAddressLine1" placeholder="Address Line 1" asp-for="AddressLine1">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="Address">Address Line 2</label>
+                            <input type="text" maxlength="100" class="form-control" id="txtAddressLine2" placeholder="Address Line 2" asp-for="AddressLine2">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label>State <span class="text-danger">*</span></label>
+                            @Html.DropDownListFor(m => m.StateId, Model.lstStateMaster, "Select State", new { @class = "form-control", @name = "ddlStateMaster", ID = "ddlStateMaster" })
+                            <span id="spnState" class="text-dangar" style="display:none">State is required</span>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label>District <span class="text-danger">*</span></label>
+                            @Html.DropDownListFor(m => m.DistrictId, Model.lstDistrictMaster, "Select District", new { @class = "form-control", @name = "ddlDistrictMaster", ID = "ddlDistrictMaster" })
+                            <span id="spnDistrict" class="text-dangar" style="display:none">District is required</span>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label>City <span class="text-danger">*</span></label>
+                            @Html.DropDownListFor(m => m.CityId, Model.lstCityMaster, "Select City", new { @class = "form-control", @name = "ddlCity", ID = "ddlCity" })
+                            <span id="spnCity" class="text-dangar" style="display:none">City is required</span>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label>PIN <span class="text-danger">*</span></label>
+                            <input asp-for="PinCode" maxlength="100" type="text" class="form-control" id="txtPinCode" placeholder="Pin Code">
+                            <span id="spnPinCode" class="text-dangar" style="display:none">PIN is required</span>
+                        </div>
+
+                    </div>
+                </div>
+                <!-- Contact section End -->
+                <div class="row mb-5">
+                    <div class="col-md-12 text-center">
+                        <button type="submit" class="btn btn-primary">Update</button>
+                        <a asp-action="Index" class="btn btn-primary">Back to List</a>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    function ShowImagePreview(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('#imagePreview').prop('src', e.target.result);
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>

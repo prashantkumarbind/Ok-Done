@@ -1,0 +1,86 @@
+﻿@model eSanjeevaniIcu.Portal.Models.UserViewModel
+
+@{
+    ViewData["Title"] = "::User Details::";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="PageBorder">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table color-table PageTitle">
+                Delete Menu
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table color-table">
+                <dl class="row">
+
+                    <dt class="col-sm-2 padd5">
+                        User Type
+                    </dt>
+                    <dd class="col-sm-10 padd5">
+                        : @Html.DisplayFor(model => model.UserType)
+                    </dd>
+
+                    <dt class="col-sm-2 padd5">
+                        First Name
+                    </dt>
+                    <dd class="col-sm-10 padd5">
+                        : @Html.DisplayFor(model => model.FirstName)
+                    </dd>
+                    <dt class="col-sm-2 padd5">
+                        Last Name
+                    </dt>
+                    <dd class="col-sm-10 padd5">
+                        : @Html.DisplayFor(model => model.LastName)
+                    </dd>
+                    <dt class="col-sm-2 padd5">
+                        User Name
+                    </dt>
+                    <dd class="col-sm-10 padd5">
+                        : @Html.DisplayFor(model => model.UserName)
+                    </dd>
+                    <dt class="col-sm-2 padd5">
+                        Mobile No
+                    </dt>
+                    <dd class="col-sm-10 padd5">
+                        : @Html.DisplayFor(model => model.MobileNumber)
+                    </dd>
+                    <dt class="col-sm-2 padd5">
+                        Email
+                    </dt>
+                    <dd class="col-sm-10 padd5">
+                        : @Html.DisplayFor(model => model.Email)
+                    </dd>
+                    <dt class="col-sm-2 padd5">
+                        Status
+                    </dt>
+                    <dd class="col-sm-10 padd5">
+                        : @if (Model.Status == true)
+                        {
+                            <span>Active</span>
+                        }
+                        else
+                        {
+                            <span>Inactive</span>
+                        }
+                    </dd>
+                </dl>
+                <div style="border:none;">
+                    <div class="row">
+                        <div class="col-md-12 text-left">
+                            <a asp-action="Edit" asp-route-id="@Model.UserId" class="btn btn-primary">Edit</a>
+                            <a asp-action="Index" class="btn btn-primary">Back to List</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- /.content -->
+</div>

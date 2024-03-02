@@ -1,0 +1,177 @@
+﻿@using Microsoft.Extensions.Options;
+@using eSanjeevaniIcu.Portal.Controllers;
+@using eSanjeevaniIcu.Portal;
+
+@inject IOptions<ApplicationConfigurations> OptionsApplicationConfiguration
+@{
+    string apiUrl = @OptionsApplicationConfiguration.Value.ApplicationHostUrl;
+    ViewData["Title"] = "CoE List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
+<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap4.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.14.1/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link href="~/css/sweet-alert.css" rel="stylesheet" />
+<script src="~/js/sweet-alert.js"></script>
+<script src="~/js/ceo.js"></script>
+<link href="~/css/coe.css" rel="stylesheet" />
+<script>
+    $(document).ready(function () {
+        if ('@TempData["SubmitResult"]' == '@Common.MsgSaveSuccess') {
+            swal("Success", '@OptionsApplicationConfiguration.Value.MsgSaveSuccess', "success");
+        }
+        else if ('@TempData["SubmitResult"]' == '@Common.MsgUpdateSuccess') {
+            swal("Success", '@OptionsApplicationConfiguration.Value.MsgUpdateSuccess', "success");
+        }
+        else {
+
+        }
+    });
+
+   
+</script>
+
+<div id ="loader" class="loader"></div>
+<div class="PageBorder">
+    <div class="row">
+        <div class="col-md-12 col-sm-12">
+            <div class="table color-table PageTitle">
+                <div class="row">
+                    <div class="col-md-8">
+                        CoE List
+                    </div>
+                    <div class="col-md-4" style="text-align:right">
+                        <a class="btn btn-primary" asp-action="Create"><i class="fa-solid fa-plus"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="padding:10px;">
+        <table id="CoEList" class="table-hover table-striped row-border table-sm" style="width:100%;">
+            <thead>
+                <tr>
+                    <th>Sl.No.</th>
+                    <th>Date</th>
+                    <th>CoE</th>
+                    <th>State</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+        </table>
+        
+    </div>
+    <div class="row" style="padding:10px;">
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('#CoEList').dataTable({
+            "ajax": {
+                "url": '@apiUrl/CoE/GetCoEList',
+                "type": "GET"
+            },
+            autoWidth: false,
+            responsive: {
+
+            },
+            "columnDefs": [
+                { "width": "5%", "targets": 0 },
+                { "width": "10%", "targets": 1 },
+                { "width": "35%", "targets": 2 },
+                { "width": "10%", "targets": 3 },
+                { "width": "10%", "targets": 4 },
+                { "width": "20%", "targets": 5 }
+            ],
+            columns: [
+                { data: 'coeId',
+                    render: function (data, type, row, meta) {
+                        return meta.row + 1;
+                    }
+                },
+                
+                {
+                    data: 'createdOn',
+                    render: function (data, type, row, meta) {
+                        
+                        return moment(data).format('DD-MMM-YYYY');
+                    }
+                },
+                { data: 'coeName' },
+                { data: 'stateName' },
+                { data: 'status',
+                    render: function(data, type, row, meta) {
+                        let checked = data == true ? 'checked' : '';
+                        return `<div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" ${checked} id="statusswitch" disabled><label class="custom-control-label" for="statusswitch"></label></div>`;
+                    }
+                },
+                { 
+                    data: 'coeId',
+                    render: function (data, type, row, meta) {
+                        
+                        return `<a href="@apiUrl/CoE/View/${data}" class="btn btn-primary btn-sm" style="color:#fff"><i class="fa-solid fa-eye"></i></a> <a class="btn btn-primary btn-sm" style="color:#fff" href="@apiUrl/CoE/Edit/${data}"><i class="fa-solid fa-edit"></i></a> <a class="btn btn-primary btn-sm" style="color:#fff" onclick="Delete(${data})"><i class="fa-solid fa-trash"></i></a> <button class="btn btn-primary btn-sm" style="color:#fff" onclick=ManageCoe(${data})><i class="fa-solid fa-gear"></i></button>`;
+                    }
+                }
+            ]
+        });
+
+   
+       
+    });
+    function ManageCoe(coeId) {
+        let url = "@apiUrl/CoE/ManageCoE";
+        post(url, {'coeId':coeId})
+    }
+    function Delete(id) {
+        
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: "btn btn-success",
+                cancelButton: "btn btn-danger"
+            },
+            buttonsStyling: false
+        });
+        swalWithBootstrapButtons.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes, delete it!",
+            cancelButtonText: "No, cancel!",
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: 'DELETE',
+                    url: "@apiUrl/CoE/delete",
+                    data: { 'id': id},
+                    success: function (data) {
+                        swalWithBootstrapButtons.fire({
+                            title: "Deleted!",
+                            text: "Your record has been deleted.",
+                            icon: "success"
+                        });
+                        $('#CoEList').dataTable().ajax.reload();
+                    }
+                });
+                
+            } else if (
+               
+                result.dismiss === Swal.DismissReason.cancel
+            ) {
+                
+            }
+        });
+    }
+        
+    var loader = document.getElementById("loader");
+    window.addEventListener("load", function () {
+        loader.style.display =  "none";
+    })
+
+    
+</script>

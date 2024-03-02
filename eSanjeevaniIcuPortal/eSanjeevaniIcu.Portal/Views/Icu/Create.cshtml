@@ -1,0 +1,145 @@
+﻿@model eSanjeevaniIcu.Portal.Models.IcuViewModel
+@using Microsoft.Extensions.Options;
+@using eSanjeevaniIcu.Portal.Controllers;
+
+@inject IOptions<ApplicationConfigurations> OptionsApplicationConfiguration
+@{
+    string apiUrl = @OptionsApplicationConfiguration.Value.ApplicationHostUrl;
+    ViewData["Title"] = "ICU";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.14.1/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link href="~/css/sweet-alert.css" rel="stylesheet" />
+
+
+<div class="PageBorder">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table color-table PageTitle">
+                Add ICU
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 mt-3">
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="col-md-12">
+                    <div class="col-md-4 mb-3">
+                        <label>State Name <span class="text-danger">*</span></label>
+                        @Html.DropDownListFor(m => m.StateId, Model.lstStateMaster, "Select State", new { @class = "form-control", @name = "ddlStateMaster", ID = "ddlStateMaster" })
+                        <span id="spnState" class="text-danger" style="display:none">State is required</span>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="validationCustom01">Spoke Name <span class="text-danger">*</span></label>
+                        @Html.DropDownListFor(m => m.SpokeHospitalId, Model.lstSpokeHospital, "Select Spoke Hospital", new { @class = "form-control", @name = "ddlSpokeHospital", ID = "ddlSpokeHospital" })
+                        <span id="spnSpokeHospital" class="text-danger" style="display:none">Spoke Hospital is required</span>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="validationCustom01">ICU Name <span class="text-danger">*</span></label>
+                        <input asp-for="IcuName" type="text" class="form-control" id="txtIcuName">
+                        <span id="spnIcuName" class="text-danger" style="display:none">ICU Name is required</span>
+                        <div class="valid-feedback">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="col-md-4 mb-3">
+                        <label>Total Beds </label>
+                        <input asp-for="TotalBeds" type="text" class="form-control" id="txtTotalBeds" readonly>
+                        @* <span id="spnTotalBeds" class="text-danger" style="display:none">Required</span> *@
+                        <div class="valid-feedback">
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label>HDU Beds <span class="text-danger">*</span></label>
+                        <input asp-for="HduBeds" type="text" class="form-control" id="txtHduBeds">
+                        <span id="spnHduBeds" class="text-danger" style="display:none">Required</span>
+                        <div class="valid-feedback">
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label>ICU Beds <span class="text-danger">*</span></label>
+                        <input asp-for="IcuBeds" type="text" class="form-control" id="txtIcuBeds">
+                        <span id="spnIcuBeds" class="text-danger" style="display:none">Required</span>
+                        <div class="valid-feedback">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="col-md-4 mb-3">
+                        <label>Other </label>
+                        <input asp-for="Other" type="text" class="form-control" id="txtOther" placeholder="Bed Type">
+                        <div class="valid-feedback">
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label>Beds </label>
+                        <input asp-for="Beds" type="text" class="form-control" id="txtBeds">
+                        <div class="valid-feedback">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-5">
+                    <div class="col-md-12 text-center">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <a asp-action="Index" class="btn btn-primary">Cancel</a>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    $(document).ready(function () {
+        $("#ddlStateMaster").change(function () {
+            var selectedStateId = $(this).val();
+
+            $.ajax({
+                url: "/Icu/GetSpokeHospitals",
+                data: { stateId: selectedStateId },
+                type: "GET",
+                success: function (data) {
+                    // Updating Spoke Hospital dropdown with the received data
+                    $("#ddlSpokeHospital").empty();
+                    $.each(data, function (index, item) {
+                        $("#ddlSpokeHospital").append($('<option>', {
+                            value: item.value,
+                            text: item.text
+                        }));
+                    });
+                },
+                error: function (xhr, status, error) {
+                    
+                }
+            });
+        });
+    });
+</script>
+
+@* For finding the sum of beds *@
+<script>
+    $(document).ready(function () {
+        function updateTotalBeds() {
+            var hduBeds = parseInt($("#txtHduBeds").val()) || 0;
+            var icuBeds = parseInt($("#txtIcuBeds").val()) || 0;
+            var otherBeds = parseInt($("#txtBeds").val()) || 0;
+
+            var totalBeds = hduBeds + icuBeds + otherBeds;
+            $("#txtTotalBeds").val(totalBeds);
+        }
+
+        $("#txtHduBeds, #txtIcuBeds, #txtBeds").on('input', function () {
+            updateTotalBeds();
+        });
+
+        updateTotalBeds();
+    });
+</script>
